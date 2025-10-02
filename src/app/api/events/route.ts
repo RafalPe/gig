@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
 
 export async function GET() {
   try {
@@ -13,6 +15,9 @@ export async function GET() {
     return NextResponse.json(events);
   } catch (error) {
     console.error("Failed to fetch events:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
