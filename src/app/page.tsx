@@ -1,22 +1,56 @@
-import { Button, Typography, Container } from "@mui/material";
-import Box from "@mui/material/Box";
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  Grid,
+} from "@mui/material";
+import { Event } from "@/types";
 
-export default function Home() {
+async function getEvents(): Promise<Event[]> {
+  const res = await fetch("http://localhost:3000/api/events", {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch events");
+  }
+
+  return res.json();
+}
+
+export default async function Home() {
+  const events = await getEvents();
+
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          my: 4,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Welcome to Next.js with MUI!
+    <Container maxWidth="md">
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Nadchodzące Wydarzenia
         </Typography>
-        <Button variant="contained">Button 😱</Button>
+        <Grid container spacing={4}>
+          {events.map((event) => (
+            <Grid key={event.id} container spacing={2}>
+              <Card sx={{ height: "100%" }}>
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {event.name}
+                  </Typography>
+                  <Typography color="text.secondary">{event.artist}</Typography>
+                  <Typography variant="body2" sx={{ mt: 1.5 }}>
+                    {new Date(event.date).toLocaleDateString("pl-PL", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Typography>
+                  <Typography variant="body2">{event.location}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </Container>
   );
