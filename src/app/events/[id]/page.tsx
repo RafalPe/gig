@@ -1,17 +1,21 @@
 import { Container, Typography, Box, Paper, Button } from "@mui/material";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Event } from "@/types";
+import CreateGroupForm from "@/components/CreateGroupForm";
 
 async function getEventDetails(id: string): Promise<Event | null> {
   const res = await fetch(`http://localhost:3000/api/events/${id}`, {
     cache: "no-store",
   });
 
+  if (res.status === 404) {
+    return null;
+  }
+
   if (!res.ok) {
-    if (res.status === 404) {
-      return null;
-    }
     throw new Error("Failed to fetch event details");
   }
 
@@ -23,8 +27,10 @@ export default async function EventDetailsPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = await params;
-  const event = await getEventDetails(id);
+  const [event, session] = await Promise.all([
+    getEventDetails(params.id),
+    getServerSession(authOptions),
+  ]);
 
   if (!event) {
     notFound();
@@ -59,6 +65,8 @@ export default async function EventDetailsPage({
             </Typography>
           )}
         </Paper>
+
+        {session && <CreateGroupForm eventId={event.id} />}
       </Box>
     </Container>
   );
