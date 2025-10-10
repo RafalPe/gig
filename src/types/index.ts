@@ -8,3 +8,19 @@ export type Event = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type GroupWithMembers = {
+  id: string;
+  name: string;
+  description: string | null;
+  owner: {
+    name: string | null;
+    image: string | null;
+  };
+  members: {
+    user: {
+      name: string | null;
+      image: string | null;
+    };
+  }[];
+};
