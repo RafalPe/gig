@@ -27,8 +27,10 @@ export default async function EventDetailsPage({
 }: {
   params: { id: string };
 }) {
+  const { id } = await params;
+
   const [event, session] = await Promise.all([
-    getEventDetails(params.id),
+    getEventDetails(id),
     getServerSession(authOptions),
   ]);
 
