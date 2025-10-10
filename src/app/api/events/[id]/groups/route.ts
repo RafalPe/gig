@@ -5,6 +5,41 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+    const eventId = id;
+    const groups = await prisma.group.findMany({
+      where: {
+        eventId: eventId,
+      },
+      include: {
+        owner: {
+          select: { name: true, image: true },
+        },
+        members: {
+          include: {
+            user: {
+              select: { name: true, image: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return NextResponse.json(groups);
+  } catch (error) {
+    console.error("Failed to fetch groups:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
