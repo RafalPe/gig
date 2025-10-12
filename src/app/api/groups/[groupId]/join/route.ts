@@ -12,21 +12,12 @@ export async function POST(
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string })?.id;
 
-  console.log("Attempting to add user to group:", {
-    userId,
-    groupId: params.groupId,
-  });
-
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   try {
     const groupId = params.groupId;
-    console.log("Attempting to add user to group:", {
-      userId,
-      groupId: params.groupId,
-    });
     const existingMembership = await prisma.membersOnGroups.findUnique({
       where: {
         userId_groupId: {
