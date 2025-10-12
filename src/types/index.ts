@@ -14,6 +14,7 @@ export type GroupWithMembers = {
   name: string;
   description: string | null;
   owner: {
+    id: string;
     name: string | null;
     image: string | null;
   };
