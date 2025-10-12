@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 import {
   Typography,
@@ -8,6 +7,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Button,
 } from "@mui/material";
 import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
@@ -24,8 +24,8 @@ export default function GroupsList({
   session: Session | null;
 }) {
   const dispatch = useAppDispatch();
-
   const groups = useAppSelector((state) => state.groups.groups);
+  const pendingAction = useAppSelector((state) => state.groups.pendingAction);
 
   useEffect(() => {
     dispatch(setGroups(initialGroups));
@@ -41,6 +41,30 @@ export default function GroupsList({
 
   const userId = (session?.user as { id?: string })?.id;
 
+  const renderActionButton = (group: GroupWithMembers) => {
+    const isMember =
+      userId && group.members.some((member) => member.user.id === userId);
+    const isLoading = pendingAction?.groupId === group.id;
+
+    if (!session || !userId) {
+      return null;
+    }
+
+    if (isLoading) {
+      return (
+        <Button size="small" variant="outlined" disabled>
+          {pendingAction?.type === "join" ? "Dołączanie..." : "Opuszczanie..."}
+        </Button>
+      );
+    }
+
+    if (isMember) {
+      return <LeaveGroupButton groupId={group.id} userId={userId} />;
+    }
+
+    return <JoinGroupButton groupId={group.id} userId={userId} />;
+  };
+
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h5" component="h2" gutterBottom>
@@ -48,31 +72,17 @@ export default function GroupsList({
       </Typography>
       <Paper>
         <List>
-          {groups.map((group) => {
-            const isMember =
-              userId &&
-              group.members.some((member) => member.user.id === userId);
-
-            return (
-              <ListItem
-                key={group.id}
-                secondaryAction={
-                  session && userId ? (
-                    isMember ? (
-                      <LeaveGroupButton groupId={group.id} userId={userId} />
-                    ) : (
-                      <JoinGroupButton groupId={group.id} userId={userId} />
-                    )
-                  ) : null
-                }
-              >
-                <ListItemText
-                  primary={group.name}
-                  secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
-                />
-              </ListItem>
-            );
-          })}
+          {groups.map((group) => (
+            <ListItem
+              key={group.id}
+              secondaryAction={renderActionButton(group)}
+            >
+              <ListItemText
+                primary={group.name}
+                secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
+              />
+            </ListItem>
+          ))}
         </List>
       </Paper>
     </Box>
