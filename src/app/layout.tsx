@@ -4,6 +4,7 @@ import ThemeRegistry from "@/components/ThemeRegistry";
 import AuthProvider from "@/components/AuthProvider";
 import AuthButtons from "@/components/AuthButtons";
 import { AppBar, Toolbar, Typography, Container } from "@mui/material";
+import ReduxProvider from "@/components/ReduxProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,17 +20,19 @@ export default function RootLayout({
     <html lang="pl">
       <body>
         <AuthProvider>
-          <ThemeRegistry>
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  EventMates
-                </Typography>
-                <AuthButtons />
-              </Toolbar>
-            </AppBar>
-            <Container>{children}</Container>{" "}
-          </ThemeRegistry>
+          <ReduxProvider>
+            <ThemeRegistry>
+              <AppBar position="static">
+                <Toolbar>
+                  <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                    EventMates
+                  </Typography>
+                  <AuthButtons />
+                </Toolbar>
+              </AppBar>
+              <Container>{children}</Container>{" "}
+            </ThemeRegistry>
+          </ReduxProvider>
         </AuthProvider>
       </body>
     </html>
