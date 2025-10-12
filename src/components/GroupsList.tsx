@@ -8,14 +8,13 @@ import {
   List,
   ListItem,
   ListItemText,
-  Chip,
 } from "@mui/material";
 import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
-import JoinGroupButton from "./JoinGroupButton";
-
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { setGroups } from "@/lib/redux/groupsSlice";
+import JoinGroupButton from "./JoinGroupButton";
+import LeaveGroupButton from "./LeaveGroupButton";
 
 export default function GroupsList({
   groups: initialGroups,
@@ -58,8 +57,12 @@ export default function GroupsList({
               <ListItem
                 key={group.id}
                 secondaryAction={
-                  session && !isMember && userId ? (
-                    <JoinGroupButton groupId={group.id} userId={userId} />
+                  session && userId ? (
+                    isMember ? (
+                      <LeaveGroupButton groupId={group.id} userId={userId} />
+                    ) : (
+                      <JoinGroupButton groupId={group.id} userId={userId} />
+                    )
                   ) : null
                 }
               >
@@ -67,13 +70,6 @@ export default function GroupsList({
                   primary={group.name}
                   secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
                 />
-                {isMember && (
-                  <Chip
-                    label="Jesteś w tej ekipie"
-                    color="success"
-                    size="small"
-                  />
-                )}
               </ListItem>
             );
           })}
