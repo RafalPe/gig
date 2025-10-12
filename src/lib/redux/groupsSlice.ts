@@ -14,6 +14,19 @@ export const joinGroup = createAsyncThunk(
   }
 );
 
+export const leaveGroup = createAsyncThunk(
+  "groups/leaveGroup",
+  async ({ groupId, userId }: { groupId: string; userId: string }) => {
+    const response = await fetch(`/api/groups/${groupId}/leave`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to leave group");
+    }
+    return { groupId, userId };
+  }
+);
+
 interface GroupsState {
   groups: GroupWithMembers[];
   status: "idle" | "loading" | "succeeded" | "failed";
@@ -35,7 +48,6 @@ const groupsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(joinGroup.pending, (state, action) => {
-
         const { groupId, userId } = action.meta.arg;
         const group = state.groups.find((g) => g.id === groupId);
         if (group) {
@@ -45,7 +57,13 @@ const groupsSlice = createSlice({
         }
       })
       .addCase(joinGroup.rejected, (state, action) => {
-
+        const { groupId, userId } = action.meta.arg;
+        const group = state.groups.find((g) => g.id === groupId);
+        if (group) {
+          group.members = group.members.filter((m) => m.user.id !== userId);
+        }
+      })
+      .addCase(leaveGroup.pending, (state, action) => {
         const { groupId, userId } = action.meta.arg;
         const group = state.groups.find((g) => g.id === groupId);
         if (group) {
