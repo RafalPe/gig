@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import {
   Typography,
   Box,
@@ -11,13 +14,24 @@ import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
 import JoinGroupButton from "./JoinGroupButton";
 
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { setGroups } from "@/lib/redux/groupsSlice";
+
 export default function GroupsList({
-  groups,
+  groups: initialGroups,
   session,
 }: {
   groups: GroupWithMembers[];
   session: Session | null;
 }) {
+  const dispatch = useAppDispatch();
+
+  const groups = useAppSelector((state) => state.groups.groups);
+
+  useEffect(() => {
+    dispatch(setGroups(initialGroups));
+  }, [dispatch, initialGroups]);
+
   if (groups.length === 0) {
     return (
       <Typography sx={{ mt: 4, textAlign: "center" }}>
@@ -44,8 +58,8 @@ export default function GroupsList({
               <ListItem
                 key={group.id}
                 secondaryAction={
-                  session && !isMember ? (
-                    <JoinGroupButton groupId={group.id} />
+                  session && !isMember && userId ? (
+                    <JoinGroupButton groupId={group.id} userId={userId} />
                   ) : null
                 }
               >

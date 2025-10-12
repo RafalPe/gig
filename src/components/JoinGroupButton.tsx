@@ -1,21 +1,20 @@
 "use client";
 
 import { Button } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { joinGroup } from "@/lib/redux/groupsSlice";
 
-export default function JoinGroupButton({ groupId }: { groupId: string }) {
-  const router = useRouter();
+export default function JoinGroupButton({
+  groupId,
+  userId,
+}: {
+  groupId: string;
+  userId: string;
+}) {
+  const dispatch = useAppDispatch();
 
-  const handleJoin = async () => {
-    const response = await fetch(`/api/groups/${groupId}/join`, {
-      method: "POST",
-    });
-
-    if (response.ok) {
-      router.refresh();
-    } else {
-      alert("Nie udało się dołączyć do ekipy. Spróbuj ponownie.");
-    }
+  const handleJoin = () => {
+    dispatch(joinGroup({ groupId, userId }));
   };
 
   return (
