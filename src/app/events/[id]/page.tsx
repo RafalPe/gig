@@ -83,7 +83,7 @@ export default async function EventDetailsPage({
 
         {session && <CreateGroupForm eventId={event.id} />}
 
-        <GroupsList groups={groups} />
+        <GroupsList groups={groups} session={session} />
       </Box>
     </Container>
   );
