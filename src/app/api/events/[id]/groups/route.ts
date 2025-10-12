@@ -9,6 +9,8 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  await getServerSession(authOptions);
+
   try {
     const { id } = await params;
     const eventId = id;
@@ -18,12 +20,12 @@ export async function GET(
       },
       include: {
         owner: {
-          select: { name: true, image: true },
+          select: { id: true, name: true, image: true },
         },
         members: {
           include: {
             user: {
-              select: { name: true, image: true },
+              select: { id: true, name: true, image: true },
             },
           },
         },
@@ -51,7 +53,8 @@ export async function POST(
   }
 
   try {
-    const eventId = params.id;
+    const { id } = await params;
+    const eventId = id;
 
     const { name, description } = await request.json();
     if (!name) {
