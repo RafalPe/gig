@@ -29,12 +29,12 @@ export const leaveGroup = createAsyncThunk(
 
 interface GroupsState {
   groups: GroupWithMembers[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  pendingAction: { groupId: string; type: "join" | "leave" } | null;
 }
 
 const initialState: GroupsState = {
   groups: [],
-  status: "idle",
+  pendingAction: null,
 };
 
 const groupsSlice = createSlice({
@@ -48,27 +48,52 @@ const groupsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(joinGroup.pending, (state, action) => {
-        const { groupId, userId } = action.meta.arg;
-        const group = state.groups.find((g) => g.id === groupId);
+        state.pendingAction = {
+          groupId: action.meta.arg.groupId,
+          type: "join",
+        };
+        const group = state.groups.find(
+          (g) => g.id === action.meta.arg.groupId
+        );
         if (group) {
           group.members.push({
-            user: { id: userId, name: "...", image: null },
+            user: { id: action.meta.arg.userId, name: "...", image: null },
           });
         }
       })
+      .addCase(joinGroup.fulfilled, (state) => {
+        state.pendingAction = null;
+      })
       .addCase(joinGroup.rejected, (state, action) => {
-        const { groupId, userId } = action.meta.arg;
-        const group = state.groups.find((g) => g.id === groupId);
+        state.pendingAction = null;
+        const group = state.groups.find(
+          (g) => g.id === action.meta.arg.groupId
+        );
         if (group) {
-          group.members = group.members.filter((m) => m.user.id !== userId);
+          group.members = group.members.filter(
+            (m) => m.user.id !== action.meta.arg.userId
+          );
         }
       })
       .addCase(leaveGroup.pending, (state, action) => {
-        const { groupId, userId } = action.meta.arg;
-        const group = state.groups.find((g) => g.id === groupId);
+        state.pendingAction = {
+          groupId: action.meta.arg.groupId,
+          type: "leave",
+        };
+        const group = state.groups.find(
+          (g) => g.id === action.meta.arg.groupId
+        );
         if (group) {
-          group.members = group.members.filter((m) => m.user.id !== userId);
+          group.members = group.members.filter(
+            (m) => m.user.id !== action.meta.arg.userId
+          );
         }
+      })
+      .addCase(leaveGroup.fulfilled, (state) => {
+        state.pendingAction = null;
+      })
+      .addCase(leaveGroup.rejected, (state) => {
+        state.pendingAction = null;
       });
   },
 });
