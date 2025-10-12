@@ -19,6 +19,7 @@ export type GroupWithMembers = {
   };
   members: {
     user: {
+      id: string;
       name: string | null;
       image: string | null;
     };
