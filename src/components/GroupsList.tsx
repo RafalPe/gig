@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { setGroups } from "@/lib/redux/groupsSlice";
 import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
+import DeleteGroupButton from "./DeleteGroupButton";
 
 export default function GroupsList({
   groups: initialGroups,
@@ -78,7 +79,14 @@ export default function GroupsList({
               secondaryAction={renderActionButton(group)}
             >
               <ListItemText
-                primary={group.name}
+                primary={
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {group.name}
+                    {userId === group.owner.id && (
+                      <DeleteGroupButton groupId={group.id} />
+                    )}
+                  </Box>
+                }
                 secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
               />
             </ListItem>

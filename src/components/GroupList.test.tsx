@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import type { Session } from "next-auth";
 import type { GroupWithMembers } from "@/types";
 import GroupsList from "./GroupsList";
-// Importujemy naszą nową funkcję renderującą
 import { renderWithProviders } from "@/utils/test-utils";
 
 // Mock the Next.js router
@@ -35,7 +34,6 @@ const mockGroupsData: GroupWithMembers[] = [
 
 describe("GroupsList", () => {
   it("should render a message when no groups are provided", () => {
-    // Renderujemy z pustym stanem początkowym Reduxa
     renderWithProviders(<GroupsList groups={[]} session={null} />, {
       preloadedState: {
         groups: { groups: [], pendingAction: null },
@@ -48,7 +46,6 @@ describe("GroupsList", () => {
 
   it('should render the "Join" button for a logged-in user who is not a member', () => {
     const mockSession = createMockSession({ id: "user99" });
-    // Renderujemy ze stanem Reduxa, który zawiera grupy
     renderWithProviders(
       <GroupsList groups={mockGroupsData} session={mockSession} />,
       {
@@ -63,7 +60,6 @@ describe("GroupsList", () => {
 
   it('should render a disabled "Joining..." button when a join action is pending', () => {
     const mockSession = createMockSession({ id: "user99" });
-    // Renderujemy ze stanem Reduxa, który symuluje akcję w toku
     renderWithProviders(
       <GroupsList groups={mockGroupsData} session={mockSession} />,
       {

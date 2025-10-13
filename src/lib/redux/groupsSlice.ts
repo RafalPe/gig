@@ -27,6 +27,19 @@ export const leaveGroup = createAsyncThunk(
   }
 );
 
+export const deleteGroup = createAsyncThunk(
+  "groups/deleteGroup",
+  async (groupId: string) => {
+    const response = await fetch(`/api/groups/${groupId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete group");
+    }
+    return { groupId };
+  }
+);
+
 interface GroupsState {
   groups: GroupWithMembers[];
   pendingAction: { groupId: string; type: "join" | "leave" } | null;
@@ -88,6 +101,9 @@ const groupsSlice = createSlice({
             (m) => m.user.id !== action.meta.arg.userId
           );
         }
+      })
+      .addCase(deleteGroup.pending, (state, action) => {
+        state.groups = state.groups.filter((g) => g.id !== action.meta.arg);
       })
       .addCase(leaveGroup.fulfilled, (state) => {
         state.pendingAction = null;
