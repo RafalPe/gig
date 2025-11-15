@@ -5,9 +5,14 @@ import {
   Box,
   Paper,
   List,
-  ListItem,
+  ListItemButton,
+  ListItemAvatar,
   ListItemText,
   Button,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Avatar,
 } from "@mui/material";
 import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
@@ -17,6 +22,7 @@ import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
 import DeleteGroupButton from "./DeleteGroupButton";
 import MessageBoard from "./MessageBoard";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
 
 export default function GroupsList({
@@ -70,51 +76,75 @@ export default function GroupsList({
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Paper>
-        <List>
-          {groups.map((group) => {
-            const isMember =
-              userId &&
-              group.members.some((member) => member.user.id === userId);
+      {groups.map((group) => {
+        const isMember =
+          userId && group.members.some((member) => member.user.id === userId);
 
-            return (
-              <ListItem
-                key={group.id}
-                secondaryAction={renderActionButton(group)}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
+        return (
+          <Paper sx={{ mb: 2, overflow: "hidden" }} key={group.id}>
+            <Accordion sx={{ backgroundImage: "none", boxShadow: "none" }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`panel-${group.id}-content`}
+                id={`panel-${group.id}-header`}
               >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
                       {group.name}
                       {userId === group.owner.id && (
                         <DeleteGroupButton groupId={group.id} />
                       )}
-                    </Box>
-                  }
-                  secondary={
-                    <Box sx={{ width: "100%" }}>
-                      Założyciel:
-                      <Link
-                        href={`/profile/${group.owner.id}`}
-                        style={{ color: "inherit" }}
-                      >
-                        {group.owner.name}
-                      </Link>
-                      {` | Członkowie: ${group.members.length}`}
-                    </Box>
-                  }
-                />
-                {isMember && <MessageBoard groupId={group.id} />}
-              </ListItem>
-            );
-          })}
-        </List>
-      </Paper>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Założyciel: {group.owner.name} | Członkowie:{" "}
+                      {group.members.length}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ pr: 1 }}>{renderActionButton(group)}</Box>
+                </Box>
+              </AccordionSummary>
+
+              <AccordionDetails
+                sx={{ borderTop: 1, borderColor: "divider", p: 0 }}
+              >
+                <List dense>
+                  {group.members.map((member) => (
+                    <Link
+                      href={`/profile/${member.user.id}`}
+                      key={member.user.id}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <ListItemButton>
+                        <ListItemAvatar>
+                          <Avatar
+                            src={member.user.image || undefined}
+                            sx={{ width: 24, height: 24 }}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText primary={member.user.name} />
+                      </ListItemButton>
+                    </Link>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+
+            {isMember && <MessageBoard groupId={group.id} />}
+          </Paper>
+        );
+      })}
     </Box>
   );
 }
