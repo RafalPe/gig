@@ -1,8 +1,10 @@
 import { Event } from "@/types";
 
-export async function getEvents(): Promise<Event[]> {
-  const apiUrl = process.env.API_URL || "http://localhost:3000";
-  const res = await fetch(`${apiUrl}/api/events`, {
+export async function getEvents(searchQuery: string | null): Promise<Event[]> {
+  const searchParam = searchQuery ? `?search=${searchQuery}` : "";
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/events${searchParam}`, {
     cache: "no-store",
   });
 
