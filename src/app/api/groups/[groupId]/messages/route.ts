@@ -23,7 +23,7 @@ export async function GET(
       },
       include: {
         author: {
-          select: { name: true, image: true },
+          select: { id: true, name: true, image: true },
         },
       },
       orderBy: {
@@ -64,7 +64,7 @@ export async function POST(
       },
       include: {
         author: {
-          select: { name: true, image: true },
+          select: { id: true, name: true, image: true },
         },
       },
     });
