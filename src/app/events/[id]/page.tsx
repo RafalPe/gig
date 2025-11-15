@@ -1,4 +1,4 @@
-import { Container, Typography, Box, Paper, Button } from "@mui/material";
+import { Typography, Box, Paper, Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth/next";
@@ -52,39 +52,99 @@ export default async function EventDetailsPage({
   }
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 4 }}>
-        <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
-          &larr; Wróć do listy
-        </Button>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h3" component="h1" gutterBottom>
-            {event.name}
-          </Typography>
-          <Typography variant="h5" color="text.secondary" gutterBottom>
-            {event.artist}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            <strong>Gdzie:</strong> {event.location}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Kiedy:</strong>{" "}
-            {new Date(event.date).toLocaleString("pl-PL", {
-              dateStyle: "full",
-              timeStyle: "short",
-            })}
-          </Typography>
-          {event.description && (
-            <Typography variant="body1" sx={{ mt: 3 }}>
-              {event.description}
+    <Box sx={{ my: 4 }}>
+      {/* Przycisk powrotu */}
+      <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
+        &larr; Wróć do listy
+      </Button>
+
+      {/* Sekcja Hero */}
+      <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden", mb: 4 }}>
+        <Box
+          sx={{
+            height: 300,
+            backgroundImage: `url(${
+              event.imageUrl || "/images/gig-placeholder.png"
+            })`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            p: 3,
+            color: "white",
+            "&::before": {
+              // Warstwa z gradientem dla czytelności tekstu
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
+            },
+          }}
+        >
+          <Box sx={{ position: "relative" }}>
+            <Typography variant="h3" component="h1" gutterBottom>
+              {event.name}
             </Typography>
-          )}
-        </Paper>
+            <Typography variant="h5" color="inherit">
+              {event.artist}
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
 
-        {session && <CreateGroupForm eventId={event.id} />}
+      {/* Reszta treści */}
+      <Grid container spacing={4}>
+        {/* LEWA KOLUMNA (bez zmian) */}
+        <Grid item xs={12} md={5}>
+          <Typography variant="h5" gutterBottom>
+            Szczegóły
+          </Typography>
+          <Paper elevation={1} sx={{ p: 3, height: "100%" }}>
+            <Typography variant="body1">
+              <strong>Gdzie:</strong> {event.location}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              <strong>Kiedy:</strong>{" "}
+              {new Date(event.date).toLocaleString("pl-PL", {
+                dateStyle: "full",
+                timeStyle: "short",
+              })}
+            </Typography>
+            {event.description && (
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                {event.description}
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <GroupsList groups={groups} session={session} />
-      </Box>
-    </Container>
+        {/* POPRAWIONA PRAWA KOLUMNA */}
+        <Grid item xs={12} md={7}>
+          {/* Header dla prawej kolumny */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2, // Margines pod nagłówkiem
+            }}
+          >
+            <Typography variant="h5">Ekipy na to wydarzenie</Typography>
+            {/* Przycisk jest teraz elegancko obok tytułu */}
+            {session && <CreateGroupForm eventId={event.id} />}
+          </Box>
+
+          {/* Lista ekip */}
+          <GroupsList groups={groups} session={session} />
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
