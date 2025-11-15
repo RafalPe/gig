@@ -12,12 +12,14 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
+import Link from "next/link";
 
 type Message = {
   id: string;
   content: string;
   createdAt: string;
   author: {
+    id: string;
     name: string | null;
     image: string | null;
   };
@@ -67,9 +69,25 @@ export default function MessageBoard({ groupId }: { groupId: string }) {
           {messages.map((msg) => (
             <ListItem key={msg.id}>
               <ListItemAvatar>
-                <Avatar src={msg.author.image || undefined} />
+                <Link
+                  href={`/profile/${msg.author.id}`}
+                  key={msg.id}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Avatar src={msg.author.image || undefined} />
+                </Link>
               </ListItemAvatar>
-              <ListItemText primary={msg.author.name} secondary={msg.content} />
+              <ListItemText
+                primary={
+                  <Link
+                    href={`/profile/${msg.author.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {msg.author.name}
+                  </Link>
+                }
+                secondary={msg.content}
+              />
             </ListItem>
           ))}
           {isLoading && <Typography>Ładowanie...</Typography>}
