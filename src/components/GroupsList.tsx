@@ -16,6 +16,7 @@ import { setGroups } from "@/lib/redux/groupsSlice";
 import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
 import DeleteGroupButton from "./DeleteGroupButton";
+import MessageBoard from "./MessageBoard";
 
 export default function GroupsList({
   groups: initialGroups,
@@ -73,24 +74,37 @@ export default function GroupsList({
       </Typography>
       <Paper>
         <List>
-          {groups.map((group) => (
-            <ListItem
-              key={group.id}
-              secondaryAction={renderActionButton(group)}
-            >
-              <ListItemText
-                primary={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {group.name}
-                    {userId === group.owner.id && (
-                      <DeleteGroupButton groupId={group.id} />
-                    )}
-                  </Box>
-                }
-                secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
-              />
-            </ListItem>
-          ))}
+          {groups.map((group) => {
+            const isMember =
+              userId &&
+              group.members.some((member) => member.user.id === userId);
+
+            return (
+              <ListItem
+                key={group.id}
+                secondaryAction={renderActionButton(group)}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                <ListItemText
+                  primary={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {group.name}
+                      {userId === group.owner.id && (
+                        <DeleteGroupButton groupId={group.id} />
+                      )}
+                    </Box>
+                  }
+                  secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
+                  sx={{ width: "100%" }}
+                />
+                {isMember && <MessageBoard groupId={group.id} />}
+              </ListItem>
+            );
+          })}
         </List>
       </Paper>
     </Box>

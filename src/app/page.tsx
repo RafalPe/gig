@@ -1,7 +1,5 @@
-import { Container, Typography, Box, Card, CardContent } from "@mui/material";
+import { Container, Typography, Box } from "@mui/material";
 import { Event } from "@/types";
-import Link from "next/link";
-import CardMedia from "@mui/material/CardMedia";
 import AnimatedCard from "@/components/AnimatedCard";
 
 async function getEvents(): Promise<Event[]> {
