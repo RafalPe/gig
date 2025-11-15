@@ -1,4 +1,4 @@
-import { Typography, Box, Paper, Button, Grid } from "@mui/material";
+import { Typography, Box, Paper, Button, Container } from "@mui/material";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth/next";
@@ -53,12 +53,10 @@ export default async function EventDetailsPage({
 
   return (
     <Box sx={{ my: 4 }}>
-      {/* Przycisk powrotu */}
       <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
         &larr; Wróć do listy
       </Button>
 
-      {/* Sekcja Hero */}
       <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden", mb: 4 }}>
         <Box
           sx={{
@@ -75,7 +73,6 @@ export default async function EventDetailsPage({
             p: 3,
             color: "white",
             "&::before": {
-              // Warstwa z gradientem dla czytelności tekstu
               content: '""',
               position: "absolute",
               top: 0,
@@ -99,52 +96,58 @@ export default async function EventDetailsPage({
         </Box>
       </Paper>
 
-      {/* Reszta treści */}
-      <Grid container spacing={4}>
-        {/* LEWA KOLUMNA (bez zmian) */}
-        <Grid item xs={12} md={5}>
-          <Typography variant="h5" gutterBottom>
-            Szczegóły
-          </Typography>
-          <Paper elevation={1} sx={{ p: 3, height: "100%" }}>
-            <Typography variant="body1">
-              <strong>Gdzie:</strong> {event.location}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              <strong>Kiedy:</strong>{" "}
-              {new Date(event.date).toLocaleString("pl-PL", {
-                dateStyle: "full",
-                timeStyle: "short",
-              })}
-            </Typography>
-            {event.description && (
-              <Typography variant="body1" sx={{ mt: 2 }}>
-                {event.description}
-              </Typography>
-            )}
-          </Paper>
-        </Grid>
-
-        {/* POPRAWIONA PRAWA KOLUMNA */}
-        <Grid item xs={12} md={7}>
-          {/* Header dla prawej kolumny */}
+      <Container>
+        <Box sx={{ my: 4 }}>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2, // Margines pod nagłówkiem
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                md: "5fr 7fr",
+              },
+              gap: 4,
             }}
           >
-            <Typography variant="h5">Ekipy na to wydarzenie</Typography>
-            {/* Przycisk jest teraz elegancko obok tytułu */}
-            {session && <CreateGroupForm eventId={event.id} />}
-          </Box>
+            <Box>
+              <Typography variant="h5" gutterBottom>
+                Szczegóły
+              </Typography>
+              <Paper elevation={1} sx={{ p: 3, height: "100%" }}>
+                <Typography variant="body1">
+                  <strong>Gdzie:</strong> {event.location}
+                </Typography>
+                <Typography variant="body1" sx={{ mt: 1 }}>
+                  <strong>Kiedy:</strong>{" "}
+                  {new Date(event.date).toLocaleString("pl-PL", {
+                    dateStyle: "full",
+                    timeStyle: "short",
+                  })}
+                </Typography>
+                {event.description && (
+                  <Typography variant="body1" sx={{ mt: 2 }}>
+                    {event.description}
+                  </Typography>
+                )}
+              </Paper>
+            </Box>
 
-          {/* Lista ekip */}
-          <GroupsList groups={groups} session={session} />
-        </Grid>
-      </Grid>
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h5">Ekipy na to wydarzenie</Typography>
+                {session && <CreateGroupForm eventId={event.id} />}
+              </Box>
+              <GroupsList groups={groups} session={session} />
+            </Box>
+          </Box>
+        </Box>
+      </Container>
     </Box>
   );
 }
