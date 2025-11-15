@@ -1,18 +1,7 @@
 import { Container, Typography, Box } from "@mui/material";
 import { Event } from "@/types";
 import AnimatedCard from "@/components/AnimatedCard";
-
-async function getEvents(): Promise<Event[]> {
-  const res = await fetch("http://localhost:3000/api/events", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch events");
-  }
-
-  return res.json();
-}
+import { getEvents } from "@/lib/api";
 
 export default async function Home() {
   const events = await getEvents();
