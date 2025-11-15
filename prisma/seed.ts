@@ -15,6 +15,7 @@ async function main() {
         date: new Date("2025-11-15T20:00:00Z"),
         location: "Stadion Narodowy, Warszawa",
         description: "Wielki koncert na zakończenie trasy.",
+        imageUrl: "https://picsum.photos/seed/podsiadlo/400/200",
       },
       {
         name: "Open'er Festival",
@@ -22,6 +23,7 @@ async function main() {
         date: new Date("2026-07-01T12:00:00Z"),
         location: "Lotnisko Gdynia-Kosakowo, Gdynia",
         description: "Największy festiwal muzyczny w Polsce.",
+        imageUrl: "https://picsum.photos/seed/opener/400/200",
       },
       {
         name: "Koncert Sanah",
@@ -29,6 +31,7 @@ async function main() {
         date: new Date("2025-12-05T19:00:00Z"),
         location: "Tauron Arena, Kraków",
         description: "Poezja i muzyka w jednym.",
+        imageUrl: "https://picsum.photos/seed/sanah/400/200",
       },
       {
         name: "Warsaw Festival",

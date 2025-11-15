@@ -7,6 +7,7 @@ export type Event = {
   description: string | null;
   createdAt: string;
   updatedAt: string;
+  imageUrl: string | null;
 };
 
 export type GroupWithMembers = {

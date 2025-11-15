@@ -68,6 +68,7 @@ model Event {
   artist      String
   date        DateTime
   location    String
+  imageUrl    String? 
   description String?
     groups Group[]
 
