@@ -17,6 +17,7 @@ import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
 import DeleteGroupButton from "./DeleteGroupButton";
 import MessageBoard from "./MessageBoard";
+import Link from "next/link";
 
 export default function GroupsList({
   groups: initialGroups,
@@ -69,9 +70,6 @@ export default function GroupsList({
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Ekipy na to wydarzenie
-      </Typography>
       <Paper>
         <List>
           {groups.map((group) => {
@@ -98,8 +96,18 @@ export default function GroupsList({
                       )}
                     </Box>
                   }
-                  secondary={`Założyciel: ${group.owner.name} | Członkowie: ${group.members.length}`}
-                  sx={{ width: "100%" }}
+                  secondary={
+                    <Box sx={{ width: "100%" }}>
+                      Założyciel:
+                      <Link
+                        href={`/profile/${group.owner.id}`}
+                        style={{ color: "inherit" }}
+                      >
+                        {group.owner.name}
+                      </Link>
+                      {` | Członkowie: ${group.members.length}`}
+                    </Box>
+                  }
                 />
                 {isMember && <MessageBoard groupId={group.id} />}
               </ListItem>
