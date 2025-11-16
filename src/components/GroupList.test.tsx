@@ -5,14 +5,12 @@ import type { GroupWithMembers } from "@/types";
 import GroupsList from "./GroupsList";
 import { renderWithProviders } from "@/utils/test-utils";
 
-// Mock the Next.js router
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     refresh: jest.fn(),
   }),
 }));
 
-// Helper function
 const createMockSession = (user: {
   id: string;
   name?: string | null;
@@ -21,7 +19,6 @@ const createMockSession = (user: {
   expires: new Date(Date.now() + 86400 * 1000).toISOString(),
 });
 
-// Reusable mock data
 const mockGroupsData: GroupWithMembers[] = [
   {
     id: "group1",
