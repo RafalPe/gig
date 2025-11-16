@@ -11,6 +11,7 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string })?.id;
+  const userName = session?.user?.name || "Ktoś";
 
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -18,6 +19,7 @@ export async function POST(
 
   try {
     const groupId = params.groupId;
+
     const existingMembership = await prisma.membersOnGroups.findUnique({
       where: {
         userId_groupId: {
@@ -31,14 +33,32 @@ export async function POST(
       return new NextResponse("User is already in this group", { status: 409 });
     }
 
-    const newMember = await prisma.membersOnGroups.create({
-      data: {
-        userId,
-        groupId,
-      },
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      select: { ownerId: true, name: true },
     });
 
-    return NextResponse.json(newMember, { status: 200 });
+    if (!group) {
+      return new NextResponse("Group not found", { status: 404 });
+    }
+
+    await prisma.$transaction([
+      prisma.membersOnGroups.create({
+        data: { userId, groupId },
+      }),
+      ...(group.ownerId !== userId
+        ? [
+            prisma.notification.create({
+              data: {
+                userId: group.ownerId,
+                message: `${userName} dołączył do Twojej ekipy "${group.name}"!`,
+              },
+            }),
+          ]
+        : []),
+    ]);
+
+    return new NextResponse(null, { status: 200 });
   } catch (error) {
     console.error("Failed to join group:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
