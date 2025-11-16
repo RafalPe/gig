@@ -26,6 +26,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   messages Message[]
+  notifications Notification[]
 }
 
 model Account {
@@ -117,4 +118,15 @@ model MembersOnGroups {
   assignedAt DateTime @default(now())
   
   @@id([userId, groupId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Dla kogo jest to powiadomienie?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 }
