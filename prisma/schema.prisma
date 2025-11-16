@@ -9,24 +9,30 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" 
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+enum EventType {
+  OFFICIAL
+  USER_SUBMITTED
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  groupsOwned    Group[]   @relation("GroupOwner")
-  groupsMemberOf MembersOnGroups[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  messages Message[]
-  notifications Notification[]
+  id              String            @id @default(cuid())
+  name            String?
+  email           String?           @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  groupsOwned     Group[]           @relation("GroupOwner")
+  groupsMemberOf  MembersOnGroups[]
+  eventsOrganized Event[]           @relation("EventOrganizer")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  messages        Message[]
+  notifications   Notification[]
 }
 
 model Account {
@@ -70,10 +76,16 @@ model Event {
   artist      String
   date        DateTime
   location    String
-  imageUrl    String? 
+  imageUrl    String?
   description String?
-    groups Group[]
+  groups      Group[]
 
+  organizerId String?
+  organizer   User?   @relation("EventOrganizer", fields: [organizerId], references: [id])
+
+  eventType  EventType @default(USER_SUBMITTED)
+  isVerified Boolean   @default(false)
+  externalId String?   @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,15 +96,15 @@ model Message {
   content   String
   createdAt DateTime @default(now())
 
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
 
-  groupId   String
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 model Group {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
 
@@ -105,18 +117,18 @@ model Group {
   eventId String
   event   Event  @relation(fields: [eventId], references: [id])
 
-  members MembersOnGroups[]
+  members  MembersOnGroups[]
   messages Message[]
 }
 
 model MembersOnGroups {
-  user    User    @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
   userId  String
-  group   Group   @relation(fields: [groupId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id])
   groupId String
-  
+
   assignedAt DateTime @default(now())
-  
+
   @@id([userId, groupId])
 }
 
@@ -126,7 +138,6 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  // Dla kogo jest to powiadomienie?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
