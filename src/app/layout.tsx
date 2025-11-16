@@ -3,11 +3,13 @@ import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import AuthProvider from "@/components/AuthProvider";
 import AuthButtons from "@/components/AuthButtons";
-import { AppBar, Toolbar, Typography, Container } from "@mui/material";
+import { AppBar, Toolbar, Container } from "@mui/material";
 import ReduxProvider from "@/components/ReduxProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import NotificationsBell from "@/components/NotificationsBell";
+import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,9 +31,15 @@ export default async function RootLayout({
             <ThemeRegistry>
               <AppBar position="static">
                 <Toolbar>
-                  <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    EventMates
-                  </Typography>
+                  <Link href="/" style={{ marginRight: "auto" }}>
+                    <Image
+                      src="/images/gig-logo.png"
+                      alt="EventMates Logo"
+                      width={100}
+                      height={100}
+                      priority
+                    />
+                  </Link>
                   {session && <NotificationsBell />}
                   <AuthButtons />
                 </Toolbar>
