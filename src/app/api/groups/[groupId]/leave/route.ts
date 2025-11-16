@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string })?.id;
@@ -17,7 +17,7 @@ export async function DELETE(
   }
 
   try {
-    const groupId = params.groupId;
+    const { groupId } = await params;
 
     await prisma.membersOnGroups.delete({
       where: {

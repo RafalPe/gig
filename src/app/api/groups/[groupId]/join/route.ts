@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: Request,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string })?.id;
@@ -18,7 +18,7 @@ export async function POST(
   }
 
   try {
-    const groupId = params.groupId;
+    const { groupId } = await params;
 
     const existingMembership = await prisma.membersOnGroups.findUnique({
       where: {
