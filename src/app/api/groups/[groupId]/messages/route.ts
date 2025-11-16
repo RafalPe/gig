@@ -7,7 +7,7 @@ type SessionUserWithId = { id?: string | null };
 
 export async function GET(
   request: Request,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!(session?.user as SessionUserWithId)?.id) {
@@ -39,7 +39,7 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as SessionUserWithId)?.id;
