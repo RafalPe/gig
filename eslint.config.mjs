@@ -18,7 +18,38 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "prisma/seed.ts", // Zezwól na console.log w seed.ts
     ],
+  },
+  {
+    rules: {
+      "no-console": [
+        "error",
+        {
+          allow: ["error"], // Zezwól tylko na console.error (dla logowania błędów w API)
+        },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
+  },
+  // Dla plików API routes - zezwól na console.error i console.warn
+  {
+    files: ["src/app/api/**/*.ts"],
+    rules: {
+      "no-console": [
+        "error",
+        {
+          allow: ["error", "warn"], // W API routes pozwól na console.error i console.warn
+        },
+      ],
+    },
   },
 ];
 
