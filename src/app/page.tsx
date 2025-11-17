@@ -2,6 +2,7 @@ import { Container, Typography, Box } from "@mui/material";
 import AnimatedCard from "@/components/AnimatedCard";
 import { getEvents } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
+import SuccessToastHandler from "@/components/SuccessToastHandler";
 
 export default async function Home({
   searchParams,
@@ -15,6 +16,7 @@ export default async function Home({
 
   return (
     <Container maxWidth="lg">
+      <SuccessToastHandler />
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Nadchodzące Wydarzenia
