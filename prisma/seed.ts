@@ -50,7 +50,7 @@ async function main() {
         isVerified: true,
       },
       {
-        name: "Koncert Sanah (Seed)",
+        name: "SANAH NA STADIONACH",
         artist: "sanah",
         date: new Date("2025-12-05T19:00:00Z"),
         location: "Tauron Arena, Kraków",

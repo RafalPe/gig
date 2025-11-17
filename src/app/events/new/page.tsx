@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function NewEventPage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function NewEventPage() {
     location: "",
     description: "",
     imageUrl: "",
+    sourceUrl: "",
   });
   const [date, setDate] = useState<Date | null>(new Date());
   const [error, setError] = useState("");
@@ -52,8 +54,8 @@ export default function NewEventPage() {
       if (!res.ok) {
         throw new Error("Nie udało się utworzyć wydarzenia. Spróbuj ponownie.");
       }
-
-      router.push("/?event_submitted=true");
+      toast.success("Wydarzenie wysłane do weryfikacji!");
+      router.push("/");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -107,6 +109,16 @@ export default function NewEventPage() {
             value={date}
             onChange={setDate}
             sx={{ width: "100%", mt: 2, mb: 1 }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="sourceUrl"
+            label="Link do źródła (np. strona wydarzenia)"
+            id="sourceUrl"
+            value={formData.sourceUrl}
+            onChange={handleChange}
           />
           <TextField
             margin="normal"

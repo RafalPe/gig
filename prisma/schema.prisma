@@ -79,6 +79,7 @@ model Event {
   imageUrl    String?
   description String?
   groups      Group[]
+  sourceUrl  String?
 
   organizerId String?
   organizer   User?   @relation("EventOrganizer", fields: [organizerId], references: [id])
@@ -86,7 +87,6 @@ model Event {
   eventType  EventType @default(USER_SUBMITTED)
   isVerified Boolean   @default(false)
   externalId String?   @unique
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

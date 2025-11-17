@@ -60,9 +60,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, artist, date, location, description, imageUrl } = body;
+    const { name, artist, date, location, description, imageUrl, sourceUrl } =
+      body;
 
-    if (!name || !artist || !date || !location) {
+    if (!name || !artist || !date || !location || !sourceUrl) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -74,6 +75,7 @@ export async function POST(request: NextRequest) {
         location,
         description,
         imageUrl,
+        sourceUrl,
         organizerId: userId,
         eventType: "USER_SUBMITTED",
         isVerified: false,

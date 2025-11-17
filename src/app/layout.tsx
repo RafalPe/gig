@@ -10,6 +10,7 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 import NotificationsBell from "@/components/NotificationsBell";
 import Image from "next/image";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,6 +30,7 @@ export default async function RootLayout({
         <AuthProvider>
           <ReduxProvider>
             <ThemeRegistry>
+              <Toaster position="top-right" />
               <AppBar position="static">
                 <Toolbar>
                   <Link href="/" style={{ marginRight: "auto" }}>
