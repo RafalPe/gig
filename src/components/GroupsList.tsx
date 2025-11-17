@@ -49,7 +49,7 @@ export default function GroupsList({
 
   if (groups.length === 0) {
     return (
-      <Paper sx={{ p: 4, textAlign: "center" }}>
+      <Paper elevation={1} sx={{ p: 4, textAlign: "center" }}>
         <Typography>
           Nikt jeszcze nie stworzył ekipy na to wydarzenie. Bądź pierwszy!
         </Typography>
@@ -90,7 +90,7 @@ export default function GroupsList({
           userId && group.members.some((member) => member.user.id === userId);
 
         return (
-          <Paper sx={{ mb: 2, overflow: "hidden" }} key={group.id}>
+          <Paper elevation={1} sx={{ mb: 2, overflow: "hidden" }} key={group.id}>
             <ListItem
               sx={{
                 p: 2,

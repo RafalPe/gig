@@ -2,7 +2,7 @@ import { Container, Box, Skeleton, Paper } from "@mui/material";
 
 export default function LoadingEventDetails() {
   return (
-    <Container maxWidth="md">
+    <Container>
       <Box sx={{ my: 4 }}>
         <Skeleton
           variant="rectangular"
@@ -42,7 +42,7 @@ export default function LoadingEventDetails() {
 
           <Box>
             <Skeleton variant="text" width={250} height={40} sx={{ mb: 2 }} />
-            <Paper sx={{ p: 2 }}>
+            <Paper elevation={1} sx={{ p: 2 }}>
               <Skeleton
                 variant="rectangular"
                 height={50}
