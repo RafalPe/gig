@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
         externalId: event.id,
         eventType: EventType.OFFICIAL,
         isVerified: true,
+        sourceUrl: event.url || "https://www.ticketmaster.com",
       };
 
       await prisma.event.upsert({
