@@ -3,7 +3,7 @@ import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import AuthProvider from "@/components/AuthProvider";
 import AuthButtons from "@/components/AuthButtons";
-import { AppBar, Toolbar, Container } from "@mui/material";
+import { AppBar, Toolbar, Container, Button } from "@mui/material";
 import ReduxProvider from "@/components/ReduxProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
@@ -40,7 +40,20 @@ export default async function RootLayout({
                       priority
                     />
                   </Link>
-                  {session && <NotificationsBell />}
+                  {session && (
+                    <>
+                      <Button
+                        component={Link}
+                        href="/events/new"
+                        variant="contained"
+                        color="secondary"
+                        sx={{ mr: 2 }}
+                      >
+                        Dodaj wydarzenie
+                      </Button>
+                      <NotificationsBell />
+                    </>
+                  )}{" "}
                   <AuthButtons />
                 </Toolbar>
               </AppBar>
