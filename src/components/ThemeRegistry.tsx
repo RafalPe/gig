@@ -4,6 +4,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import NextAppDirEmotionCacheProvider from "./EmotionCache";
 import { Inter } from "next/font/google";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { pl } from "date-fns/locale";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,8 +76,10 @@ export default function ThemeRegistry({
   return (
     <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={pl}>
+          <CssBaseline />
+          {children}
+        </LocalizationProvider>
       </ThemeProvider>
     </NextAppDirEmotionCacheProvider>
   );
