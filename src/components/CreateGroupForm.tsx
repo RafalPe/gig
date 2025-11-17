@@ -46,7 +46,11 @@ export default function CreateGroupForm({ eventId }: { eventId: string }) {
 
   return (
     <Box>
-      <Button variant="contained" onClick={handleClickOpen} sx={{ mt: 2 }}>
+      <Button
+        variant="contained"
+        onClick={handleClickOpen}
+        sx={{ mt: 2, boxShadow: 2 }}
+      >
         Stwórz nową ekipę
       </Button>
       <Dialog open={open} onClose={handleClose}>

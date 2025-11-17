@@ -52,51 +52,54 @@ export default async function EventDetailsPage({
   }
 
   return (
-    <Box sx={{ my: 4 }}>
-      <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
-        &larr; Wróć do listy
-      </Button>
+    <Container>
+      <Box sx={{ my: 4 }}>
+        <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
+          &larr; Wróć do listy
+        </Button>
 
-      <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden", mb: 4 }}>
-        <Box
-          sx={{
-            height: 300,
-            backgroundImage: `url(${
-              event.imageUrl || "/images/gig-placeholder.png"
-            })`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
-            p: 3,
-            color: "white",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
-            },
-          }}
+        <Paper
+          elevation={3}
+          sx={{ borderRadius: 3, overflow: "hidden", mb: 4 }}
         >
-          <Box sx={{ position: "relative" }}>
-            <Typography variant="h3" component="h1" gutterBottom>
-              {event.name}
-            </Typography>
-            <Typography variant="h5" color="inherit">
-              {event.artist}
-            </Typography>
+          <Box
+            sx={{
+              height: 300,
+              backgroundImage: `url(${
+                event.imageUrl || "/images/gig-placeholder.png"
+              })`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              p: 3,
+              color: "white",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
+              },
+            }}
+          >
+            <Box sx={{ position: "relative" }}>
+              <Typography variant="h3" component="h1" gutterBottom>
+                {event.name}
+              </Typography>
+              <Typography variant="h5" color="inherit">
+                {event.artist}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
 
-      <Container>
         <Box sx={{ my: 4 }}>
           <Box
             sx={{
@@ -147,7 +150,7 @@ export default async function EventDetailsPage({
             </Box>
           </Box>
         </Box>
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   );
 }
