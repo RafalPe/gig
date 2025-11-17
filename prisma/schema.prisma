@@ -18,6 +18,11 @@ enum EventType {
   USER_SUBMITTED
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id              String            @id @default(cuid())
   name            String?
@@ -33,6 +38,7 @@ model User {
   updatedAt       DateTime          @updatedAt
   messages        Message[]
   notifications   Notification[]
+  role            UserRole          @default(USER) 
 }
 
 model Account {
