@@ -30,6 +30,10 @@ export async function DELETE(
       return new NextResponse("Forbidden", { status: 403 });
     }
 
+    await prisma.membersOnGroups.deleteMany({
+      where: { groupId: groupId },
+    });
+
     await prisma.group.delete({ where: { id: groupId } });
 
     return new NextResponse(null, { status: 204 });

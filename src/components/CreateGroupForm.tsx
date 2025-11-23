@@ -11,14 +11,17 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+
+import { useCreateGroupMutation } from "@/lib/redux/groupsApi";
 
 export default function CreateGroupForm({ eventId }: { eventId: string }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
+
+
+  const [createGroup] = useCreateGroupMutation();
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -29,18 +32,15 @@ export default function CreateGroupForm({ eventId }: { eventId: string }) {
       return;
     }
 
-    const response = await fetch(`/api/events/${eventId}/groups`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description }),
-    });
-
-    if (response.ok) {
+    try {
+      await createGroup({ eventId, name, description }).unwrap();
       handleClose();
-      router.refresh();
-    } else {
-      const data = await response.json();
-      setError(data.message || "Nie udało się stworzyć ekipy.");
+     
+      setName("");
+      setDescription("");
+    } catch (err) {
+      const error = err as { data?: { message?: string } };
+      setError(error?.data?.message || "Nie udało się stworzyć ekipy.");
     }
   };
 

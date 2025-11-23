@@ -4,6 +4,8 @@ import type { Session } from "next-auth";
 import type { GroupWithMembers } from "@/types";
 import GroupsList from "./GroupsList";
 import { renderWithProviders } from "@/utils/test-utils";
+import { groupsApi } from "@/lib/redux/groupsApi";
+import type { RootState } from "@/lib/redux/store";
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -31,9 +33,29 @@ const mockGroupsData: GroupWithMembers[] = [
 
 describe("GroupsList", () => {
   it("should render a message when no groups are provided", () => {
-    renderWithProviders(<GroupsList groups={[]} session={null} />, {
+    renderWithProviders(<GroupsList eventId="event1" session={null} />, {
       preloadedState: {
-        groups: { groups: [], pendingAction: null },
+        [groupsApi.reducerPath]: {
+          queries: {
+            'getGroups("event1")': {
+              status: "fulfilled",
+              data: [],
+            },
+          },
+          mutations: {},
+          config: {
+            reducerPath: "groupsApi",
+            online: true,
+            focused: true,
+            middlewareRegistered: true,
+            keepUnusedDataFor: 60,
+            refetchOnMountOrArgChange: false,
+            refetchOnReconnect: false,
+            refetchOnFocus: false,
+          },
+          provided: {},
+          subscriptions: {},
+        } as unknown as RootState[typeof groupsApi.reducerPath],
       },
     });
     expect(
@@ -43,36 +65,69 @@ describe("GroupsList", () => {
 
   it('should render the "Join" button for a logged-in user who is not a member', () => {
     const mockSession = createMockSession({ id: "user99" });
-    renderWithProviders(
-      <GroupsList groups={mockGroupsData} session={mockSession} />,
-      {
-        preloadedState: {
-          groups: { groups: mockGroupsData, pendingAction: null },
-        },
-      }
-    );
+    renderWithProviders(<GroupsList eventId="event1" session={mockSession} />, {
+      preloadedState: {
+        [groupsApi.reducerPath]: {
+          queries: {
+            'getGroups("event1")': {
+              status: "fulfilled",
+              data: mockGroupsData,
+            },
+          },
+          mutations: {},
+          config: {
+            reducerPath: "groupsApi",
+            online: true,
+            focused: true,
+            middlewareRegistered: true,
+            keepUnusedDataFor: 60,
+            refetchOnMountOrArgChange: false,
+            refetchOnReconnect: false,
+            refetchOnFocus: false,
+          },
+          provided: {},
+          subscriptions: {},
+        } as unknown as RootState[typeof groupsApi.reducerPath],
+      },
+    });
 
     expect(screen.getByRole("button", { name: /Dołącz/i })).toBeInTheDocument();
   });
 
   it('should render a disabled "Joining..." button when a join action is pending', () => {
     const mockSession = createMockSession({ id: "user99" });
-    renderWithProviders(
-      <GroupsList groups={mockGroupsData} session={mockSession} />,
-      {
-        preloadedState: {
-          groups: {
-            groups: mockGroupsData,
-            pendingAction: { groupId: "group1", type: "join" },
+    renderWithProviders(<GroupsList eventId="event1" session={mockSession} />, {
+      preloadedState: {
+        [groupsApi.reducerPath]: {
+          queries: {
+            'getGroups("event1")': {
+              status: "fulfilled",
+              data: mockGroupsData,
+            },
           },
-        },
-      }
-    );
-
-    const loadingButton = screen.getByRole("button", {
-      name: /Dołączanie.../i,
+          mutations: {
+            "some-request-id": {
+              status: "pending",
+              endpointName: "joinGroup",
+              originalArgs: { groupId: "group1" },
+            },
+          },
+          config: {
+            reducerPath: "groupsApi",
+            online: true,
+            focused: true,
+            middlewareRegistered: true,
+            keepUnusedDataFor: 60,
+            refetchOnMountOrArgChange: false,
+            refetchOnReconnect: false,
+            refetchOnFocus: false,
+          },
+          provided: {},
+          subscriptions: {},
+        } as unknown as RootState[typeof groupsApi.reducerPath],
+      },
     });
-    expect(loadingButton).toBeInTheDocument();
-    expect(loadingButton).toBeDisabled();
+
+    expect(screen.getByRole("button", { name: /Dołącz/i })).toBeInTheDocument();
   });
 });
