@@ -1,25 +1,21 @@
 import React, { PropsWithChildren } from "react";
 import { render } from "@testing-library/react";
 import type { RenderOptions } from "@testing-library/react";
-import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 
-import type { AppStore } from "@/lib/redux/store";
-import groupsReducer from "@/lib/redux/groupsSlice";
+import { makeStore } from "@/lib/redux/store";
+import type { AppStore, RootState } from "@/lib/redux/store";
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
-  preloadedState?: { groups: ReturnType<typeof groupsReducer> };
+export interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+  preloadedState?: Partial<RootState>;
   store?: AppStore;
 }
 
 export function renderWithProviders(
   ui: React.ReactElement,
   {
-    preloadedState = undefined,
-    store = configureStore({
-      reducer: { groups: groupsReducer },
-      ...(preloadedState ? { preloadedState } : {}),
-    }),
+    preloadedState = {},
+    store = makeStore(preloadedState),
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {
