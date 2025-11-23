@@ -27,3 +27,29 @@ export type GroupWithMembers = {
     };
   }[];
 };
+
+export type DashboardGroup = {
+  id: string;
+  name: string;
+  description: string | null;
+  event: {
+    id: string;
+    name: string;
+    date: string;
+    location: string;
+    imageUrl: string | null;
+  };
+};
+
+export type DashboardEvent = {
+  id: string;
+  name: string;
+  date: string;
+  isVerified: boolean;
+  createdAt: string;
+};
+
+export type DashboardData = {
+  myGroups: DashboardGroup[];
+  myEvents: DashboardEvent[];
+};

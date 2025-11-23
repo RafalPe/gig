@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { groupsApi } from "./groupsApi";
+import { userApi } from "./userApi";
 
 const rootReducer = combineReducers({
   [groupsApi.reducerPath]: groupsApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
 });
 
 export const makeStore = (
@@ -11,7 +13,10 @@ export const makeStore = (
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(groupsApi.middleware),
+      getDefaultMiddleware()
+        .concat(groupsApi.middleware)
+        .concat(userApi.middleware),
+
     preloadedState,
   });
 };

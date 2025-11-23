@@ -2,6 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Button, Box, Typography, Avatar } from "@mui/material";
+import Link from "next/link";
 
 export default function AuthButtons() {
   const { data: session, status } = useSession();
@@ -13,6 +14,9 @@ export default function AuthButtons() {
   if (session) {
     return (
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Button component={Link} href="/dashboard" color="inherit">
+          Mój Dashboard
+        </Button>
         {session.user?.image && <Avatar src={session.user.image} />}
         <Typography>{session.user?.name}</Typography>
         <Button variant="contained" onClick={() => signOut()}>
