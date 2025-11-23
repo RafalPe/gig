@@ -1,10 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import groupsReducer from "./groupsSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { groupsApi } from './groupsApi'; 
 
 export const store = configureStore({
   reducer: {
-    groups: groupsReducer,
+    [groupsApi.reducerPath]: groupsApi.reducer,
   },
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(groupsApi.middleware),
 });
 
 export type AppStore = typeof store;

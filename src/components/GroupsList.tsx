@@ -1,34 +1,41 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Typography,
   Box,
   Paper,
+  List,
+  ListItemButton,
+  ListItemAvatar,
   ListItemText,
   Button,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Avatar,
   ListItem,
+  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { setGroups } from "@/lib/redux/groupsSlice";
+import { useGetGroupsQuery } from "@/lib/redux/groupsApi";
 import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
 import DeleteGroupButton from "./DeleteGroupButton";
 import MessageBoard from "./MessageBoard";
 import MembersListModal from "./MembersListModal";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function GroupsList({
-  groups: initialGroups,
+  eventId,
   session,
 }: {
-  groups: GroupWithMembers[];
+  eventId: string;
   session: Session | null;
 }) {
-  const dispatch = useAppDispatch();
-  const groups = useAppSelector((state) => state.groups.groups);
-  const pendingAction = useAppSelector((state) => state.groups.pendingAction);
+
+  const { data: groups = [], isLoading, isError } = useGetGroupsQuery(eventId);
 
   const [modalState, setModalState] = useState<{
     open: boolean;
@@ -43,13 +50,25 @@ export default function GroupsList({
     setModalState({ open: false, members: [] });
   };
 
-  useEffect(() => {
-    dispatch(setGroups(initialGroups));
-  }, [dispatch, initialGroups]);
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Typography sx={{ mt: 4, textAlign: "center", color: "error.main" }}>
+        Wystąpił błąd podczas pobierania ekip.
+      </Typography>
+    );
+  }
 
   if (groups.length === 0) {
     return (
-      <Paper elevation={1} sx={{ p: 4, textAlign: "center" }}>
+      <Paper sx={{ p: 4, textAlign: "center" }}>
         <Typography>
           Nikt jeszcze nie stworzył ekipy na to wydarzenie. Bądź pierwszy!
         </Typography>
@@ -60,27 +79,25 @@ export default function GroupsList({
   const userId = (session?.user as { id?: string })?.id;
 
   const renderActionButton = (group: GroupWithMembers) => {
-    const isMember =
-      userId && group.members.some((member) => member.user.id === userId);
-    const isLoading = pendingAction?.groupId === group.id;
-
     if (!session || !userId) {
       return null;
     }
 
-    if (isLoading) {
+    const isMember = group.members.some((member) => member.user.id === userId);
+
+    if (isMember) {
       return (
-        <Button size="small" variant="outlined" disabled>
-          {pendingAction?.type === "join" ? "Dołączanie..." : "Opuszczanie..."}
-        </Button>
+        <LeaveGroupButton
+          groupId={group.id}
+          userId={userId}
+          eventId={eventId}
+        />
       );
     }
 
-    if (isMember) {
-      return <LeaveGroupButton groupId={group.id} userId={userId} />;
-    }
-
-    return <JoinGroupButton groupId={group.id} userId={userId} />;
+    return (
+      <JoinGroupButton groupId={group.id} userId={userId} eventId={eventId} />
+    );
   };
 
   return (
@@ -90,7 +107,7 @@ export default function GroupsList({
           userId && group.members.some((member) => member.user.id === userId);
 
         return (
-          <Paper elevation={1} sx={{ mb: 2, overflow: "hidden" }} key={group.id}>
+          <Paper sx={{ mb: 2, overflow: "hidden" }} key={group.id}>
             <ListItem
               sx={{
                 p: 2,
@@ -110,7 +127,10 @@ export default function GroupsList({
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     {group.name}
                     {userId === group.owner.id && (
-                      <DeleteGroupButton groupId={group.id} />
+                      <DeleteGroupButton
+                        groupId={group.id}
+                        eventId={eventId}
+                      />
                     )}
                   </Box>
                 }
@@ -161,6 +181,63 @@ export default function GroupsList({
                 }}
               />
             </ListItem>
+
+            <Accordion
+              sx={{
+                backgroundImage: "none",
+                boxShadow: "none",
+                "&:before": {
+                  display: "none",
+                },
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`panel-${group.id}-content`}
+                id={`panel-${group.id}-header`}
+                sx={{
+                  borderTop: 1,
+                  borderColor: "divider",
+                  minHeight: "auto",
+                  "&.Mui-expanded": {
+                    minHeight: "auto",
+                  },
+                  "& .MuiAccordionSummary-content": {
+                    my: 1.5,
+                    "&.Mui-expanded": {
+                      my: 1.5,
+                    },
+                  },
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {group.members.length > 0
+                    ? `Pokaż ${group.members.length} członków`
+                    : "Nikt jeszcze nie dołączył"}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{ borderTop: 1, borderColor: "divider", p: 0 }}
+              >
+                <List sx={{ width: "100%", p: 0 }}>
+                  {group.members.map((member) => (
+                    <ListItemButton
+                      key={member.user.id}
+                      component={Link}
+                      href={`/profile/${member.user.id}`}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          src={member.user.image || undefined}
+                          sx={{ width: 24, height: 24 }}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText primary={member.user.name} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
 
             {isMember && (
               <Box sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>

@@ -1,20 +1,25 @@
-"use client";
-import { Button } from "@mui/material";
-import { useAppDispatch } from "@/lib/redux/hooks";
-import { leaveGroup } from "@/lib/redux/groupsSlice";
+'use client';
+import { Button } from '@mui/material';
+import { useLeaveGroupMutation } from '@/lib/redux/groupsApi';
 
 export default function LeaveGroupButton({
   groupId,
   userId,
+  eventId,
 }: {
   groupId: string;
   userId: string;
+  eventId: string;
 }) {
-  const dispatch = useAppDispatch();
-  const handleLeave = () => dispatch(leaveGroup({ groupId, userId }));
+  const [leaveGroup, { isLoading }] = useLeaveGroupMutation();
+
+  const handleLeave = () => {
+    leaveGroup({ groupId, eventId, userId });
+  };
+
   return (
-    <Button size="small" variant="outlined" color="error" onClick={handleLeave}>
-      Opuść
+    <Button size="small" variant="outlined" color="error" onClick={handleLeave} disabled={isLoading}>
+      {isLoading ? 'Opuszczanie...' : 'Opuść'}
     </Button>
   );
 }

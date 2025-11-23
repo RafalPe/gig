@@ -1,20 +1,25 @@
-"use client";
-import { Button } from "@mui/material";
-import { useAppDispatch } from "@/lib/redux/hooks";
-import { joinGroup } from "@/lib/redux/groupsSlice";
+'use client';
+import { Button } from '@mui/material';
+import { useJoinGroupMutation } from '@/lib/redux/groupsApi';
 
 export default function JoinGroupButton({
   groupId,
   userId,
+  eventId,
 }: {
   groupId: string;
   userId: string;
+  eventId: string;
 }) {
-  const dispatch = useAppDispatch();
-  const handleJoin = () => dispatch(joinGroup({ groupId, userId }));
+  const [joinGroup, { isLoading }] = useJoinGroupMutation();
+
+  const handleJoin = () => {
+    joinGroup({ groupId, eventId, userId });
+  };
+
   return (
-    <Button size="small" variant="outlined" onClick={handleJoin}>
-      Dołącz
+    <Button size="small" variant="outlined" onClick={handleJoin} disabled={isLoading}>
+      {isLoading ? 'Dołączanie...' : 'Dołącz'}
     </Button>
   );
 }
