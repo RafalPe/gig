@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Event, GroupWithMembers } from "@/types";
+import { Event } from "@/types";
 import CreateGroupForm from "@/components/CreateGroupForm";
 import GroupsList from "@/components/GroupsList";
 
@@ -23,17 +23,6 @@ async function getEventDetails(id: string): Promise<Event | null> {
   return res.json();
 }
 
-async function getGroupsForEvent(id: string): Promise<GroupWithMembers[]> {
-  const res = await fetch(`http://localhost:3000/api/events/${id}/groups`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    console.error("Failed to fetch groups");
-    return [];
-  }
-  return res.json();
-}
-
 export default async function EventDetailsPage({
   params,
 }: {
@@ -41,10 +30,9 @@ export default async function EventDetailsPage({
 }) {
   const { id } = await params;
 
-  const [event, session, groups] = await Promise.all([
+  const [event, session] = await Promise.all([
     getEventDetails(id),
     getServerSession(authOptions),
-    getGroupsForEvent(id),
   ]);
 
   if (!event) {
@@ -146,7 +134,7 @@ export default async function EventDetailsPage({
                 <Typography variant="h5">Ekipy na to wydarzenie</Typography>
                 {session && <CreateGroupForm eventId={event.id} />}
               </Box>
-              <GroupsList groups={groups} session={session} />
+              <GroupsList eventId={event.id} session={session} />
             </Box>
           </Box>
         </Box>

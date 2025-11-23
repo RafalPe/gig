@@ -108,8 +108,16 @@ const groupsSlice = createSlice({
       .addCase(leaveGroup.fulfilled, (state) => {
         state.pendingAction = null;
       })
-      .addCase(leaveGroup.rejected, (state) => {
+      .addCase(leaveGroup.rejected, (state, action) => {
         state.pendingAction = null;
+        const group = state.groups.find(
+          (g) => g.id === action.meta.arg.groupId
+        );
+        if (group) {
+          group.members.push({
+            user: { id: action.meta.arg.userId, name: "...", image: null },
+          });
+        }
       });
   },
 });
