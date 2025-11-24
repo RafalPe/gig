@@ -23,6 +23,8 @@ import EventIcon from "@mui/icons-material/Event";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useGetUserDashboardQuery } from "@/lib/redux/userApi";
+import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsTab from '@/components/SettingsTab';
 
 function CustomTabPanel(props: {
   children?: React.ReactNode;
@@ -88,6 +90,7 @@ export default function DashboardPage() {
             icon={<EventIcon />}
             label={`Moje Zgłoszenia (${myEvents.length})`}
           />
+          <Tab icon={<SettingsIcon />} label="Ustawienia" />
         </Tabs>
       </Paper>
 
@@ -212,6 +215,9 @@ export default function DashboardPage() {
             ))}
           </Box>
         )}
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={2}>
+        <SettingsTab />
       </CustomTabPanel>
     </Container>
   );

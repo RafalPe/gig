@@ -10,7 +10,15 @@ export const userApi = createApi({
       query: () => "user/dashboard",
       providesTags: ["Dashboard"],
     }),
+    updateUser: builder.mutation<void, { name: string; image?: string }>({
+      query: (body) => ({
+        url: "user",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Dashboard"],
+    }),
   }),
 });
 
-export const { useGetUserDashboardQuery } = userApi;
+export const { useGetUserDashboardQuery, useUpdateUserMutation } = userApi;
