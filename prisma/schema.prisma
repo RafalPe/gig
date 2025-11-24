@@ -46,6 +46,7 @@ model User {
   notifications   Notification[]
   role            UserRole          @default(USER) 
   deletionRequests DeletionRequest[]
+  groupDeletionRequests GroupDeletionRequest[]
 }
 
 model Account {
@@ -146,6 +147,19 @@ model Group {
 
   members  MembersOnGroups[]
   messages Message[]
+  groupDeletionRequests GroupDeletionRequest[]
+}
+
+model GroupDeletionRequest {
+  id        String        @id @default(cuid())
+  reason    String
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+
+  groupId   String
+  group     Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
 }
 
 model MembersOnGroups {

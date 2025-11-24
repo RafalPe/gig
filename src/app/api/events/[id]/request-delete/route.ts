@@ -1,47 +1,46 @@
-import { NextResponse, NextRequest } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { NextResponse, NextRequest } from "next/server";
+import prisma from "@/lib/prisma";
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
   if (!userId) {
-    return new NextResponse('Unauthorized', { status: 401 });
+    return new NextResponse("Unauthorized", { status: 401 });
   }
 
   try {
-    const { id } = await params;
+    const { groupId } = await params;
     const { reason } = await request.json();
 
     if (!reason) {
-      return new NextResponse('Reason is required', { status: 400 });
+      return new NextResponse("Reason is required", { status: 400 });
     }
 
-    const event = await prisma.event.findUnique({
-      where: { id },
-      select: { organizerId: true }
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      select: { ownerId: true },
     });
 
-    if (!event || event.organizerId !== userId) {
-      return new NextResponse('Forbidden', { status: 403 });
+    if (!group || group.ownerId !== userId) {
+      return new NextResponse("Forbidden", { status: 403 });
     }
 
-    await prisma.deletionRequest.create({
+    await prisma.groupDeletionRequest.create({
       data: {
-        eventId: id,
-        userId: userId,
-        reason: reason,
-      }
+        groupId,
+        userId,
+        reason,
+      },
     });
 
-    return NextResponse.json({ message: 'Request submitted' }, { status: 201 });
+    return NextResponse.json({ message: "Request submitted" }, { status: 201 });
   } catch (error) {
     console.error(error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
