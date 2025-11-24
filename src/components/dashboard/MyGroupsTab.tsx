@@ -1,5 +1,5 @@
 'use client';
-
+import { DashboardGroup } from '@/types';
 import {
   Box,
   Button,
@@ -10,8 +10,6 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { DashboardGroup } from '@/types';
-
 export default function MyGroupsTab({ groups }: { groups: DashboardGroup[] }) {
   if (groups.length === 0) {
     return (
@@ -48,7 +46,7 @@ export default function MyGroupsTab({ groups }: { groups: DashboardGroup[] }) {
             <CardMedia
               component="img"
               height="140"
-              image={group.event.imageUrl || '/images/default-event.jpg'}
+              image={group.event.imageUrl || '/images/gig-placeholder.png'}
               alt={group.event.name}
             />
             <CardContent>
