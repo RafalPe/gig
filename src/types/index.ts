@@ -47,6 +47,9 @@ export type DashboardEvent = {
   date: string;
   isVerified: boolean;
   createdAt: string;
+  _count: {
+    groups: number;
+  };
 };
 
 export type DashboardData = {

@@ -41,6 +41,9 @@ export async function GET() {
             date: true,
             isVerified: true,
             createdAt: true,
+            _count: {
+              select: { groups: true }
+            }
           },
         },
       },

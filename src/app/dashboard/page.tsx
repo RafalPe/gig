@@ -16,15 +16,22 @@ import {
   CircularProgress,
   Alert,
   Button,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import Link from "next/link";
 import GroupIcon from "@mui/icons-material/Group";
 import EventIcon from "@mui/icons-material/Event";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { useGetUserDashboardQuery } from "@/lib/redux/userApi";
+import { useDeleteEventMutation, useGetUserDashboardQuery } from "@/lib/redux/userApi";
 import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsTab from '@/components/SettingsTab';
+import toast from "react-hot-toast";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ConfirmDialog from "@/components/ConfirmDialog";
+import RequestDeleteModal from "@/components/RequestDeleteModal";
 
 function CustomTabPanel(props: {
   children?: React.ReactNode;
@@ -42,10 +49,35 @@ function CustomTabPanel(props: {
 export default function DashboardPage() {
   const { data, isLoading, error } = useGetUserDashboardQuery();
   const [tabValue, setTabValue] = useState(0);
+  const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
+  const [requestModalEventId, setRequestModalEventId] = useState<string | null>(null);
+  const [confirmModalEventId, setConfirmModalEventId] = useState<string | null>(null);
+
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
+
+const handleDeleteClick = (eventId: string, groupsCount: number) => {
+    if (groupsCount > 0) {
+      setRequestModalEventId(eventId);
+    } else {
+      setConfirmModalEventId(eventId);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmModalEventId) return;
+
+    try {
+      await deleteEvent(confirmModalEventId).unwrap();
+      toast.success('Zgłoszenie usunięte.');
+      setConfirmModalEventId(null);
+    } catch {
+      toast.error('Nie udało się usunąć zgłoszenia.');
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -166,51 +198,47 @@ export default function DashboardPage() {
         )}
       </CustomTabPanel>
 
-      <CustomTabPanel value={tabValue} index={1}>
+     <CustomTabPanel value={tabValue} index={1}>
         {myEvents.length === 0 ? (
-          <Box sx={{ textAlign: "center", py: 4 }}>
-            <Typography variant="h6" color="text.secondary">
-              Nie zgłosiłeś jeszcze żadnych wydarzeń.
-            </Typography>
-            <Button
-              component={Link}
-              href="/events/new"
-              variant="outlined"
-              sx={{ mt: 2 }}
-            >
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="h6" color="text.secondary">Nie zgłosiłeś jeszcze żadnych wydarzeń.</Typography>
+            <Button component={Link} href="/events/new" variant="outlined" sx={{ mt: 2 }}>
               Dodaj pierwsze wydarzenie
             </Button>
           </Box>
         ) : (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {myEvents.map((event) => (
-              <Paper
-                key={event.id}
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <Paper key={event.id} sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
                   <Typography variant="h6">{event.name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Data: {new Date(event.date).toLocaleDateString("pl-PL")}
+                    Data: {new Date(event.date).toLocaleDateString('pl-PL')}
+                    {event._count.groups > 0 && (
+                      <Box component="span" sx={{ ml: 2, color: 'warning.main', display: 'inline-flex', alignItems: 'center', gap: 0.5, verticalAlign: 'middle' }}>
+                        <GroupIcon fontSize="small" /> {event._count.groups} aktywnych ekip
+                      </Box>
+                    )}
                   </Typography>
                 </Box>
-                <Chip
-                  icon={
-                    event.isVerified ? <CheckCircleIcon /> : <AccessTimeIcon />
-                  }
-                  label={
-                    event.isVerified
-                      ? "Zatwierdzone"
-                      : "Oczekuje na weryfikację"
-                  }
-                  color={event.isVerified ? "success" : "warning"}
-                  variant="outlined"
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Chip
+                    icon={event.isVerified ? <CheckCircleIcon /> : <AccessTimeIcon />}
+                    label={event.isVerified ? 'Zatwierdzone' : 'Oczekuje na weryfikację'}
+                    color={event.isVerified ? 'success' : 'warning'}
+                    variant="outlined"
+                  />
+                  
+                    <Tooltip title={event._count.groups > 0 ? "Poproś o usunięcie (są aktywne ekipy)" : "Usuń zgłoszenie"}>
+                    <IconButton 
+                      color="error" 
+                      onClick={() => handleDeleteClick(event.id, event._count.groups)}
+                      disabled={isDeleting}
+                    >
+                      {event._count.groups > 0 ? <ReportProblemIcon /> : <DeleteIcon />}
+                    </IconButton>
+                  </Tooltip>
+                </Box>
               </Paper>
             ))}
           </Box>
@@ -219,6 +247,21 @@ export default function DashboardPage() {
       <CustomTabPanel value={tabValue} index={2}>
         <SettingsTab />
       </CustomTabPanel>
+        <RequestDeleteModal 
+        open={!!requestModalEventId} 
+        eventId={requestModalEventId}
+        onClose={() => setRequestModalEventId(null)}
+      />
+      <ConfirmDialog
+        open={!!confirmModalEventId}
+        title="Usuwanie zgłoszenia"
+        description="Czy na pewno chcesz trwale usunąć to wydarzenie? Tej operacji nie można cofnąć."
+        confirmText="Usuń trwale"
+        isDestructive
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setConfirmModalEventId(null)}
+      />
     </Container>
   );
 }

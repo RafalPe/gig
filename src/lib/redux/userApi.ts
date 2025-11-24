@@ -10,6 +10,7 @@ export const userApi = createApi({
       query: () => "user/dashboard",
       providesTags: ["Dashboard"],
     }),
+
     updateUser: builder.mutation<void, { name: string; image?: string }>({
       query: (body) => ({
         url: "user",
@@ -18,7 +19,14 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["Dashboard"],
     }),
+    deleteEvent: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `events/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Dashboard"],
+    }),
   }),
 });
 
-export const { useGetUserDashboardQuery, useUpdateUserMutation } = userApi;
+export const { useGetUserDashboardQuery, useUpdateUserMutation, useDeleteEventMutation } = userApi;

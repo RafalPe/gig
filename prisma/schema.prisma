@@ -23,6 +23,12 @@ enum UserRole {
   ADMIN
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id              String            @id @default(cuid())
   name            String?
@@ -39,6 +45,7 @@ model User {
   messages        Message[]
   notifications   Notification[]
   role            UserRole          @default(USER) 
+  deletionRequests DeletionRequest[]
 }
 
 model Account {
@@ -86,7 +93,6 @@ model Event {
   description String?
   groups      Group[]
   sourceUrl  String?
-
   organizerId String?
   organizer   User?   @relation("EventOrganizer", fields: [organizerId], references: [id])
 
@@ -94,7 +100,22 @@ model Event {
   isVerified Boolean   @default(false)
   externalId String?   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt  
+  deletionRequests DeletionRequest[]
+
+}
+
+model DeletionRequest {
+  id        String        @id @default(cuid())
+  reason    String
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId    String        // Kto prosi o usunięcie (organizator)
+  user      User          @relation(fields: [userId], references: [id])
 }
 
 model Message {
@@ -121,7 +142,7 @@ model Group {
   owner   User   @relation("GroupOwner", fields: [ownerId], references: [id])
 
   eventId String
-  event   Event  @relation(fields: [eventId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   members  MembersOnGroups[]
   messages Message[]
@@ -130,7 +151,7 @@ model Group {
 model MembersOnGroups {
   user    User   @relation(fields: [userId], references: [id])
   userId  String
-  group   Group  @relation(fields: [groupId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId String
 
   assignedAt DateTime @default(now())
