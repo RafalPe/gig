@@ -28,6 +28,16 @@ export type GroupWithMembers = {
   }[];
 };
 
+export type RequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type DeletionRequest = {
+  id: string;
+  status: RequestStatus;
+  reason: string;
+  createdAt: string;
+};
+
+
 export type DashboardGroup = {
   id: string;
   name: string;
@@ -50,6 +60,7 @@ export type DashboardEvent = {
   _count: {
     groups: number;
   };
+  deletionRequests: DeletionRequest[];
 };
 
 export type DashboardData = {

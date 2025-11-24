@@ -32,6 +32,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RequestDeleteModal from "@/components/RequestDeleteModal";
+import CancelIcon from '@mui/icons-material/Cancel';
+import { DashboardEvent } from "@/types";
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 function CustomTabPanel(props: {
   children?: React.ReactNode;
@@ -78,6 +81,40 @@ const handleDeleteClick = (eventId: string, groupsCount: number) => {
     }
   };
 
+  const renderDeleteStatus = (event: DashboardEvent) => {
+    const latestRequest = event.deletionRequests?.[0];
+
+    if (!latestRequest) return null;
+
+    if (latestRequest.status === 'PENDING') {
+      return (
+        <Chip
+          icon={<HourglassEmptyIcon />}
+          label="Weryfikacja usuwania"
+          color="warning"
+          variant="outlined"
+          size="small"
+        />
+      );
+    }
+
+    if (latestRequest.status === 'REJECTED') {
+      return (
+        <Tooltip title="Administrator odrzucił poprzednią prośbę. Możesz spróbować ponownie.">
+          <Chip
+            icon={<CancelIcon />}
+            label="Odmowa usunięcia"
+            color="error"
+            variant="outlined"
+            size="small"
+          />
+        </Tooltip>
+      );
+    }
+
+    return null;
+  };
+  
 
   if (isLoading) {
     return (
@@ -208,39 +245,51 @@ const handleDeleteClick = (eventId: string, groupsCount: number) => {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {myEvents.map((event) => (
-              <Paper key={event.id} sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="h6">{event.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Data: {new Date(event.date).toLocaleDateString('pl-PL')}
-                    {event._count.groups > 0 && (
-                      <Box component="span" sx={{ ml: 2, color: 'warning.main', display: 'inline-flex', alignItems: 'center', gap: 0.5, verticalAlign: 'middle' }}>
-                        <GroupIcon fontSize="small" /> {event._count.groups} aktywnych ekip
-                      </Box>
-                    )}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Chip
-                    icon={event.isVerified ? <CheckCircleIcon /> : <AccessTimeIcon />}
-                    label={event.isVerified ? 'Zatwierdzone' : 'Oczekuje na weryfikację'}
-                    color={event.isVerified ? 'success' : 'warning'}
-                    variant="outlined"
-                  />
+            {myEvents.map((event) => {
+              const latestRequest = event.deletionRequests?.[0];
+              const isPendingDelete = latestRequest?.status === 'PENDING';
+
+              return (
+                <Paper key={event.id} sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box>
+                    <Typography variant="h6">{event.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Data: {new Date(event.date).toLocaleDateString('pl-PL')}
+                      {event._count.groups > 0 && (
+                        <Box component="span" sx={{ ml: 2, color: 'warning.main', display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                          <GroupIcon fontSize="small" /> {event._count.groups} aktywnych ekip
+                        </Box>
+                      )}
+                    </Typography>
+                  </Box>
                   
-                    <Tooltip title={event._count.groups > 0 ? "Poproś o usunięcie (są aktywne ekipy)" : "Usuń zgłoszenie"}>
-                    <IconButton 
-                      color="error" 
-                      onClick={() => handleDeleteClick(event.id, event._count.groups)}
-                      disabled={isDeleting}
-                    >
-                      {event._count.groups > 0 ? <ReportProblemIcon /> : <DeleteIcon />}
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Paper>
-            ))}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-end' }}>
+                      <Chip
+                        icon={event.isVerified ? <CheckCircleIcon /> : <AccessTimeIcon />}
+                        label={event.isVerified ? 'Zatwierdzone' : 'Oczekuje na weryfikację'}
+                        color={event.isVerified ? 'success' : 'warning'}
+                        variant="outlined"
+                        size="small"
+                      />
+                      {renderDeleteStatus(event)}
+                    </Box>
+                    
+                    <Tooltip title={isPendingDelete ? "Oczekiwanie na decyzję administratora" : (event._count.groups > 0 ? "Poproś o usunięcie" : "Usuń zgłoszenie")}>
+                      <span>
+                        <IconButton 
+                          color="error" 
+                          onClick={() => handleDeleteClick(event.id, event._count.groups)}
+                          disabled={isDeleting || isPendingDelete}
+                        >
+                          {event._count.groups > 0 ? <ReportProblemIcon /> : <DeleteIcon />}
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </Box>
+                </Paper>
+              );
+            })}
           </Box>
         )}
       </CustomTabPanel>

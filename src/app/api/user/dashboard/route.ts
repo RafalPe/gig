@@ -43,6 +43,15 @@ export async function GET() {
             createdAt: true,
             _count: {
               select: { groups: true }
+            }, deletionRequests: {
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+              select: {
+                id: true,
+                status: true,
+                reason: true,
+                createdAt: true
+              }
             }
           },
         },
