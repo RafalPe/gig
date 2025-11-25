@@ -1,6 +1,5 @@
 'use client';
-
-import { useState } from 'react';
+import { useGetUserDashboardQuery } from '@/lib/redux/userApi';
 import {
   Container,
   Typography,
@@ -11,15 +10,13 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import GroupIcon from '@mui/icons-material/Group';
-import EventIcon from '@mui/icons-material/Event';
-import SettingsIcon from '@mui/icons-material/Settings';
-
-import { useGetUserDashboardQuery } from '@/lib/redux/userApi';
-import SettingsTab from '@/components/SettingsTab';
-import MyGroupsTab from '@/components/dashboard/MyGroupsTab';
+import { useState } from 'react';
 import MyEventsTab from '@/components/dashboard/MyEventsTab';
-
+import MyGroupsTab from '@/components/dashboard/MyGroupsTab';
+import SettingsTab from '@/components/SettingsTab';
+import EventIcon from '@mui/icons-material/Event';
+import GroupIcon from '@mui/icons-material/Group';
+import SettingsIcon from '@mui/icons-material/Settings';
 function CustomTabPanel(props: {
   children?: React.ReactNode;
   index: number;

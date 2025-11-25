@@ -22,6 +22,7 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import Link from "next/link";
 import toast from "react-hot-toast";
+
 export default function MyEventsTab({ events }: { events: DashboardEvent[] }) {
   const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
 

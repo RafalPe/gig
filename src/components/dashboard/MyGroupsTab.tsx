@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
+
 export default function MyGroupsTab({ groups }: { groups: DashboardGroup[] }) {
   if (groups.length === 0) {
     return (

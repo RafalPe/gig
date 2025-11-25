@@ -28,12 +28,14 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "ts-morph": "^27.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -47,10 +49,12 @@
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "whatwg-fetch": "^3.6.20"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
+      "ts-node scripts/organize-imports.ts",
       "eslint --fix --max-warnings=0 --no-cache"
     ]
   }
