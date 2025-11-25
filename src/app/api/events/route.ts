@@ -1,10 +1,24 @@
-import { NextResponse, NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse, NextRequest } from "next/server";
+import { z } from "zod";
+import prisma from "@/lib/prisma";
+const eventCreateSchema = z.object({
+  name: z.string().min(3, "Nazwa wydarzenia musi mieć co najmniej 3 znaki"),
+  artist: z.string().min(1, "Artysta jest wymagany"),
+  date: z.coerce.date({
+    message: "Nieprawidłowy format daty",
+  }),
+  location: z.string().min(1, "Lokalizacja jest wymagana"),
+  description: z.string().optional(),
+ imageUrl: z.url({ message: "Nieprawidłowy link do zdjęcia" })
+    .or(z.literal(""))
+    .optional(),
+ sourceUrl: z.url({ message: "Nieprawidłowy link do źródła" }),
+});
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("search");
@@ -60,21 +74,28 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, artist, date, location, description, imageUrl, sourceUrl } =
-      body;
+ const result = eventCreateSchema.safeParse(body);
 
-    if (!name || !artist || !date || !location || !sourceUrl) {
-      return new NextResponse("Missing required fields", { status: 400 });
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          error: "Błąd walidacji danych", 
+          details: result.error.format() 
+        }, 
+        { status: 400 }
+      );
     }
 
-    const newEvent = await prisma.event.create({
+const { name, artist, date, location, description, imageUrl, sourceUrl } = result.data;
+
+  const newEvent = await prisma.event.create({
       data: {
         name,
         artist,
-        date: new Date(date),
+        date,
         location,
-        description,
-        imageUrl,
+        description: description || null,
+        imageUrl: imageUrl || null,
         sourceUrl,
         organizerId: userId,
         eventType: "USER_SUBMITTED",
