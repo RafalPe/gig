@@ -1,7 +1,6 @@
+import { EventType, Prisma } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { EventType } from "@prisma/client";
-
 const TICKETMASTER_API_URL =
   "https://app.ticketmaster.com/discovery/v2/events.json";
 const API_KEY = process.env.TICKETMASTER_API_KEY;
@@ -9,6 +8,24 @@ const API_KEY = process.env.TICKETMASTER_API_KEY;
 type TicketmasterImage = {
   ratio: string;
   url: string;
+};
+
+type TicketmasterEvent = {
+  id: string;
+  name: string;
+  dates?: {
+    start?: {
+      dateTime?: string;
+      localDate?: string;
+    };
+  };
+  _embedded?: {
+    attractions?: Array<{ name: string }>;
+    venues?: Array<{ name: string }>;
+  };
+  info?: string;
+  images?: TicketmasterImage[];
+  url?: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -38,54 +55,46 @@ export async function GET(request: NextRequest) {
     }
 
     const tmData = await tmResponse.json();
-    const events = tmData._embedded?.events || [];
+    const events: TicketmasterEvent[] = tmData._embedded?.events || [];
 
-    let importedCount = 0;
-    for (const event of events) {
-      const dateString =
-        event.dates?.start?.dateTime || event.dates?.start?.localDate;
+    const upsertOperations = events
+      .map((event) => {
+        const dateString =
+          event.dates?.start?.dateTime || event.dates?.start?.localDate;
 
-      if (!dateString) {
-        console.warn(
-          `Pominięto wydarzenie "${event.name}" z powodu braku daty.`
-        );
-        continue;
-      }
+        if (!dateString) return null;
 
-      const eventDate = new Date(dateString);
+        const eventDate = new Date(dateString);
+        if (isNaN(eventDate.getTime())) return null;
 
-      if (isNaN(eventDate.getTime())) {
-        console.warn(
-          `Pominięto wydarzenie "${event.name}" z powodu nieprawidłowej daty: ${dateString}`
-        );
-        continue;
-      }
+        const eventData: Prisma.EventCreateInput = {
+          name: event.name,
+          artist: event._embedded?.attractions?.[0]?.name || "Różni artyści",
+          date: eventDate,
+          location: event._embedded?.venues?.[0]?.name || "Do ustalenia",
+          description: event.info || null,
+          imageUrl:
+            event.images?.find((img) => img.ratio === "16_9")?.url || null,
+          externalId: event.id,
+          eventType: EventType.OFFICIAL,
+          isVerified: true,
+          sourceUrl: event.url || "https://www.ticketmaster.com",
+        };
 
-      const eventData = {
-        name: event.name,
-        artist: event._embedded?.attractions?.[0]?.name || "Różni artyści",
-        date: eventDate,
-        location: event._embedded?.venues?.[0]?.name || "Do ustalenia",
-        description: event.info || null,
-        imageUrl:
-          event.images?.find((img: TicketmasterImage) => img.ratio === "16_9")
-            ?.url || null,
-        externalId: event.id,
-        eventType: EventType.OFFICIAL,
-        isVerified: true,
-        sourceUrl: event.url || "https://www.ticketmaster.com",
-      };
+        return prisma.event.upsert({
+          where: { externalId: event.id },
+          update: eventData,
+          create: eventData,
+        });
+      })
+      .filter((op) => op !== null);
 
-      await prisma.event.upsert({
-        where: { externalId: event.id },
-        update: eventData,
-        create: eventData,
-      });
-      importedCount++;
+    if (upsertOperations.length > 0) {
+      await prisma.$transaction(upsertOperations);
     }
 
     return NextResponse.json({
-      message: `Pomyślnie zaimportowano ${importedCount} wydarzeń.`,
+      message: `Pomyślnie przetworzono i zaimportowano ${upsertOperations.length} wydarzeń.`,
     });
   } catch (error) {
     console.error(error);
