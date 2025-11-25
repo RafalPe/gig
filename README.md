@@ -70,8 +70,8 @@ To run the project on your local machine:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/YourUsername/event-mates.git
-    cd event-mates
+    git clone https://github.com/RafalPe/gig.git
+    cd gig
     ```
 
 2.  **Install dependencies:**
@@ -83,7 +83,7 @@ To run the project on your local machine:
     Create a `.env` file in the root directory and populate it following this pattern:
     ```env
     # Database (PostgreSQL)
-    DATABASE_URL="postgresql://user:password@localhost:5432/eventmates_dev"
+    DATABASE_URL="postgresql://user:password@localhost:5432/gig_dev"
 
     # NextAuth
     NEXTAUTH_URL="http://localhost:3000"
