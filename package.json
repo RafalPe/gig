@@ -54,7 +54,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
-      "ts-node scripts/organize-imports.ts",
+      "tsx scripts/organize-imports.ts",
       "eslint --fix --max-warnings=0 --no-cache"
     ]
   }
