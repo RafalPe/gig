@@ -1,12 +1,11 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 type SessionUserWithId = { id?: string | null };
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);
@@ -38,7 +37,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions);

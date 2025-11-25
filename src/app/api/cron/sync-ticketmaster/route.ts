@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { EventType } from "@prisma/client";
-
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 const TICKETMASTER_API_URL =
   "https://app.ticketmaster.com/discovery/v2/events.json";
 const API_KEY = process.env.TICKETMASTER_API_KEY;
@@ -10,7 +9,7 @@ const MAX_PAGES_TO_FETCH = 15;
 
 const FILTRED_KEYWORDS = ["vip", "packages", "meet & greet", "premium"];
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const cronSecret = request.headers.get("authorization");
   if (cronSecret !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse("Unauthorized", { status: 401 });
