@@ -3,6 +3,7 @@ import { DashboardEvent } from '@/types';
 import { renderWithProviders } from '@/utils/test-utils';
 import { screen } from '@testing-library/react';
 import MyEventsTab from './MyEventsTab';
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn() }),
 }));
