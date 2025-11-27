@@ -53,6 +53,8 @@ The project was built based on modern standards and best practices (as of 2025).
 
 ## 💡 Key Design Decisions (Why?)
 
+> **⚠️ Note on Redux:** I am aware that using Redux in a Next.js project is often considered overkill. However, I chose to use it here **intentionally** to refresh my knowledge and demonstrate skills. In a standard scenario, I would rely primarily on Server State.
+
 1.  **RTK Query instead of `useEffect`:**
     In the initial phase, data was fetched manually. I decided to refactor to RTK Query to eliminate boilerplate, gain automatic caching, and – most importantly – automatic data revalidation (e.g., the group list refreshes itself after a user joins thanks to the Tag system).
 
