@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useUpdateUserMutation } from "@/lib/redux/userApi";
 import {
   Box,
   TextField,
@@ -11,11 +10,10 @@ import {
   Alert,
   AlertTitle,
 } from "@mui/material";
-import toast from "react-hot-toast";
-import { useUpdateUserMutation } from "@/lib/redux/userApi";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import InfoIcon from "@mui/icons-material/Info";
-
+import toast from "react-hot-toast";
 export default function SettingsTab() {
   const { data: session, update } = useSession();
   const [updateUser, { isLoading }] = useUpdateUserMutation();
@@ -46,7 +44,6 @@ export default function SettingsTab() {
         onSubmit={handleSubmit}
         sx={{ display: "flex", flexDirection: "column", gap: 3 }}
       >
-        {/* Sekcja Podglądu */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 1 }}>
           <Avatar
             src={image}
@@ -89,7 +86,6 @@ export default function SettingsTab() {
             }
           />
 
-          {/* Informacja o statusie funkcjonalności */}
           <Alert
             severity="info"
             variant="outlined"

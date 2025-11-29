@@ -1,8 +1,7 @@
 import "@testing-library/jest-dom";
+import { Event } from "@/types";
 import { render, screen } from "@testing-library/react";
 import EventCard from "./EventCard";
-import { Event } from "@/types";
-
 const mockEvent: Event = {
   id: "1",
   name: "Event Name",

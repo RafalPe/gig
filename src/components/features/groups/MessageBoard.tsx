@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +11,7 @@ import {
   ListItemText,
   Paper,
 } from "@mui/material";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 type Message = {

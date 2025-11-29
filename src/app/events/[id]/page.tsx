@@ -1,12 +1,11 @@
-import { Typography, Box, Paper, Button, Container } from "@mui/material";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Event } from "@/types";
-import CreateGroupForm from "@/components/CreateGroupForm";
-import GroupsList from "@/components/GroupsList";
-
+import { Typography, Box, Paper, Button, Container } from "@mui/material";
+import { getServerSession } from "next-auth/next";
+import { notFound } from "next/navigation";
+import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
+import GroupsList from "@/components/features/groups/GroupsList";
+import Link from "next/link";
 async function getEventDetails(id: string): Promise<Event | null> {
   const res = await fetch(`http://localhost:3000/api/events/${id}`, {
     cache: "no-store",

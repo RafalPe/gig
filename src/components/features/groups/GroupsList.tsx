@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useGetGroupsQuery } from "@/lib/redux/groupsApi";
+import { GroupWithMembers } from "@/types";
 import {
   Typography,
   Box,
@@ -16,17 +17,15 @@ import {
   ListItem,
   CircularProgress,
 } from "@mui/material";
-import Link from "next/link";
-import { GroupWithMembers } from "@/types";
 import { Session } from "next-auth";
-import { useGetGroupsQuery } from "@/lib/redux/groupsApi";
+import { useState } from "react";
+import DeleteGroupButton from "./DeleteGroupButton";
 import JoinGroupButton from "./JoinGroupButton";
 import LeaveGroupButton from "./LeaveGroupButton";
-import DeleteGroupButton from "./DeleteGroupButton";
-import MessageBoard from "./MessageBoard";
 import MembersListModal from "./MembersListModal";
+import MessageBoard from "./MessageBoard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
+import Link from "next/link";
 export default function GroupsList({
   eventId,
   session,

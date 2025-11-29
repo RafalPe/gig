@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Paper, InputBase, IconButton } from "@mui/material";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 export default function SearchBar() {

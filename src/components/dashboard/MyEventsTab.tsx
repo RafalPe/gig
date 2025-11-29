@@ -11,8 +11,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { useState } from "react";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import RequestDeleteModal from "@/components/RequestDeleteModal";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import RequestDeleteModal from "@/components/ui/RequestDeleteModal";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";

@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 import MyEventsTab from '@/components/dashboard/MyEventsTab';
 import MyGroupsTab from '@/components/dashboard/MyGroupsTab';
-import SettingsTab from '@/components/SettingsTab';
+import SettingsTab from "@/components/dashboard/SettingsTab";
 import EventIcon from '@mui/icons-material/Event';
 import GroupIcon from '@mui/icons-material/Group';
 import SettingsIcon from '@mui/icons-material/Settings';

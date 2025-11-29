@@ -1,7 +1,6 @@
 "use client";
-
-import { useSession, signIn, signOut } from "next-auth/react";
 import { Button, Box, Typography, Avatar } from "@mui/material";
+import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function AuthButtons() {

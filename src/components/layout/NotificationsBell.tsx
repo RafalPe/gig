@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import {
   IconButton,
   Badge,
@@ -10,6 +9,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import { useState, useEffect } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 type Notification = {

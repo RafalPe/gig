@@ -1,5 +1,5 @@
 "use client";
-
+import { GroupWithMembers } from "@/types";
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +11,6 @@ import {
   Avatar,
 } from "@mui/material";
 import Link from "next/link";
-import { GroupWithMembers } from "@/types";
-
 type MembersListModalProps = {
   open: boolean;
   onClose: () => void;

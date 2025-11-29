@@ -1,6 +1,6 @@
 "use client";
-import { motion } from "framer-motion";
 import type { Event } from "@/types";
+import { motion } from "framer-motion";
 import EventCard from "./EventCard";
 
 const cardVariants = {

@@ -1,13 +1,12 @@
 "use client";
-import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import NextAppDirEmotionCacheProvider from "./EmotionCache";
-import { Inter } from "next/font/google";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { pl } from "date-fns/locale";
-
+import { Inter } from "next/font/google";
+import NextAppDirEmotionCacheProvider from "./EmotionCache";
+import CssBaseline from "@mui/material/CssBaseline";
+import * as React from "react";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",

@@ -1,7 +1,6 @@
 "use client";
-
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function SuccessToastHandler() {

@@ -1,7 +1,6 @@
 'use client';
-import { Button } from '@mui/material';
 import { useJoinGroupMutation } from '@/lib/redux/groupsApi';
-
+import { Button } from '@mui/material';
 export default function JoinGroupButton({
   groupId,
   userId,

@@ -1,7 +1,6 @@
 'use client';
-import { Button } from '@mui/material';
 import { useLeaveGroupMutation } from '@/lib/redux/groupsApi';
-
+import { Button } from '@mui/material';
 export default function LeaveGroupButton({
   groupId,
   userId,

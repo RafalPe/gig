@@ -1,8 +1,7 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
-import Link from "next/link";
-import Image from "next/image";
 import type { Event } from "@/types";
-
+import { Box, Card, CardContent, Typography } from "@mui/material";
+import Image from "next/image";
+import Link from "next/link";
 export default function EventCard({ event }: { event: Event }) {
   const defaultImageUrl = "/images/gig-placeholder.png";
 

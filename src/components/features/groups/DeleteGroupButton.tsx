@@ -2,7 +2,7 @@
 import { useDeleteGroupMutation } from "@/lib/redux/groupsApi";
 import { IconButton } from "@mui/material";
 import { useState } from "react";
-import RequestDeleteModal from "./RequestDeleteModal";
+import RequestDeleteModal from "@/components/ui/RequestDeleteModal";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 import toast from "react-hot-toast";

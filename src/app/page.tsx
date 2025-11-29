@@ -1,8 +1,8 @@
-import { Container, Typography, Box } from "@mui/material";
-import AnimatedCard from "@/components/AnimatedCard";
 import { getEvents } from "@/lib/api";
-import SearchBar from "@/components/SearchBar";
-import SuccessToastHandler from "@/components/SuccessToastHandler";
+import { Container, Typography, Box } from "@mui/material";
+import AnimatedCard from "@/components/features/events/AnimatedCard";
+import SearchBar from "@/components/layout/SearchBar";
+import SuccessToastHandler from "@/components/ui/SuccessToastHandler";
 
 export default async function Home({
   searchParams,

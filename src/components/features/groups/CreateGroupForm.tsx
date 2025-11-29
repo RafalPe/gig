@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useCreateGroupMutation } from "@/lib/redux/groupsApi";
 import {
   Button,
   Dialog,
@@ -11,9 +10,7 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-
-import { useCreateGroupMutation } from "@/lib/redux/groupsApi";
-
+import { useState } from "react";
 export default function CreateGroupForm({ eventId }: { eventId: string }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");

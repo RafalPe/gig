@@ -1,12 +1,11 @@
-import { screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import type { Session } from "next-auth";
-import type { GroupWithMembers } from "@/types";
-import GroupsList from "./GroupsList";
-import { renderWithProviders } from "@/utils/test-utils";
 import { groupsApi } from "@/lib/redux/groupsApi";
 import type { RootState } from "@/lib/redux/store";
-
+import type { GroupWithMembers } from "@/types";
+import { renderWithProviders } from "@/utils/test-utils";
+import { screen } from "@testing-library/react";
+import type { Session } from "next-auth";
+import GroupsList from "./GroupsList";
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     refresh: jest.fn(),
