@@ -6,19 +6,29 @@ async function main() {
   console.log("Start seeding...");
 
   console.log("Cleaning old data...");
+  
   await prisma.membersOnGroups.deleteMany();
   await prisma.message.deleteMany();
   await prisma.group.deleteMany();
   await prisma.notification.deleteMany();
-  await prisma.event.deleteMany();
+
+  await prisma.event.deleteMany({
+    where: {
+      eventType: {
+        not: EventType.OFFICIAL,
+      },
+    },
+  });
 
   await prisma.user.deleteMany({
-    where: { email: "test-organizer@eventmates.com" },
+    where: { email: "test-organizer@gig.com" },
   });
 
   console.log("Creating seed organizer...");
-  const organizer = await prisma.user.create({
-    data: {
+  const organizer = await prisma.user.upsert({
+    where: { email: "test-organizer@gig.com" },
+    update: {},
+    create: {
       email: "test-organizer@gig.com",
       name: "Testowy Organizator",
     },
@@ -37,6 +47,7 @@ async function main() {
         organizerId: organizer.id,
         eventType: EventType.USER_SUBMITTED,
         isVerified: true,
+        sourceUrl: "https://www.example.com",
       },
       {
         name: "Open'er Festival (Seed)",
@@ -48,9 +59,10 @@ async function main() {
         organizerId: organizer.id,
         eventType: EventType.USER_SUBMITTED,
         isVerified: true,
+        sourceUrl: "https://www.opener.pl",
       },
       {
-        name: "SANAH NA STADIONACH",
+        name: "Koncert Sanah (Seed)",
         artist: "sanah",
         date: new Date("2025-12-05T19:00:00Z"),
         location: "Tauron Arena, Kraków",
@@ -59,12 +71,13 @@ async function main() {
         organizerId: organizer.id,
         eventType: EventType.USER_SUBMITTED,
         isVerified: true,
+        sourceUrl: "https://www.example.com",
       },
     ],
   });
 
   console.log(
-    `Seeding finished. Created ${events.count} events for user ${organizer.name}.`
+    `Seeding finished. Created ${events.count} seed events. Official events were preserved.`
   );
 }
 
