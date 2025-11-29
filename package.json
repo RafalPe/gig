@@ -24,7 +24,6 @@
     "framer-motion": "^12.23.24",
     "next": "15.5.4",
     "next-auth": "^4.24.11",
-    "prisma": "^6.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
@@ -48,6 +47,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.2.6",
+    "prisma": "^7.0.1",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
@@ -59,8 +59,5 @@
       "tsx scripts/organize-imports.ts",
       "eslint --fix --max-warnings=0 --no-cache"
     ]
-  },
-  "prisma": {
-    "seed": "ts-node --project tsconfig.seed.json prisma/seed.ts"
   }
 }
