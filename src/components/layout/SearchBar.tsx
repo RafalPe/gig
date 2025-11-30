@@ -7,13 +7,15 @@ import SearchIcon from "@mui/icons-material/Search";
 export default function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [defaultValue] = useState(searchParams.get("search") || "");
 
-  const [query, setQuery] = useState(searchParams.get("search") || "");
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    router.push(`/?search=${query}`);
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("search") as string;
+
+    router.push(`/?search=${encodeURIComponent(query)}`);
   };
 
   return (
@@ -31,8 +33,8 @@ export default function SearchBar() {
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder="Szukaj wydarzeń (np. artysta, miasto...)"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        name="search"
+        defaultValue={defaultValue}
       />
       <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
         <SearchIcon />
