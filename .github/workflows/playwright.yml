@@ -4,21 +4,77 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    # Create temporary Postgres database for tests
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        # Wait for database to be ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Environment variables for the job
+    # DATABASE_URL connects to the 'postgres' service defined above
+    # NEXTAUTH_SECRET is required for build, value can be arbitrary for testing
+    env:
+      DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+      NEXTAUTH_SECRET: super_secret_test_key
+      NEXTAUTH_URL: http://localhost:3000
+      # Dummy API KEY if required during build
+      TICKETMASTER_API_KEY: dummy_key 
+
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+        cache: 'npm' # Cache dependencies
+
     - name: Install dependencies
       run: npm ci
+
+    # Run database migrations
+    - name: Run Prisma Migrations
+      run: npx prisma migrate deploy
+
+    # Generate Prisma Client
+    - name: Generate Prisma Client
+      run: npx prisma generate
+
+    # Seed database
+    - name: Seed Database
+      run: npx prisma db seed
+
+    - name: Build
+      run: npm run build
+
+    - name: Start app (background)
+      run: npm run start &
+
+    - name: Wait for server
+      run: npx wait-on http://localhost:3000 -t 60000
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
     - name: Run Playwright tests
       run: npx playwright test
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
