@@ -5,7 +5,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 
-const ITEMS_PER_PAGE = 15;
+const DEFAULT_LIMIT = 9;
 
 const eventCreateSchema = z.object({
   name: z.string().min(3, "Nazwa wydarzenia musi mieć co najmniej 3 znaki"),
@@ -27,7 +27,9 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("search");
     
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || String(ITEMS_PER_PAGE));
+  const limitParam = parseInt(searchParams.get('limit') || '');
+    const limit = (!isNaN(limitParam) && limitParam > 0) ? limitParam : DEFAULT_LIMIT;
+    
     const skip = (page - 1) * limit;
 
     const whereCondition: Prisma.EventWhereInput = query

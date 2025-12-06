@@ -1,19 +1,21 @@
-import { getEvents } from "@/lib/api";
-import { Container, Typography, Box } from "@mui/material";
-import AnimatedCard from "@/components/features/events/AnimatedCard";
-import EventsPagination from "@/components/features/events/EventsPagination";
-import SearchBar from "@/components/layout/SearchBar";
-import SuccessToastHandler from "@/components/ui/SuccessToastHandler";
+import { getEvents } from '@/lib/api';
+import { Container, Typography, Box } from '@mui/material';
+import AnimatedCard from '@/components/features/events/AnimatedCard';
+import EventsPagination from '@/components/features/events/EventsPagination';
+import SearchBar from '@/components/layout/SearchBar';
+import SuccessToastHandler from '@/components/ui/SuccessToastHandler';
+
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: Promise<{ search?: string; page?: string }>;
+  searchParams?: Promise<{ search?: string; page?: string; limit?: string }>;
 }) {
   const awaitedSearchParams = await searchParams;
   const currentSearch = awaitedSearchParams?.search || null;
   const currentPage = Number(awaitedSearchParams?.page) || 1;
+  const currentLimit = Number(awaitedSearchParams?.limit) || 9;
   
-  const { events, pagination } = await getEvents(currentSearch, currentPage);
+  const { events, pagination } = await getEvents(currentSearch, currentPage, currentLimit);
 
   return (
     <Container maxWidth="lg">
@@ -45,10 +47,11 @@ export default async function Home({
               ))}
             </Box>
 
-            {pagination.totalPages > 1 && (
+            {(pagination.totalPages > 1 || currentLimit !== 9) && (
               <EventsPagination 
                 count={pagination.totalPages} 
-                page={currentPage} 
+                page={currentPage}
+                limit={currentLimit}
                 currentSearch={currentSearch} 
               />
             )}
