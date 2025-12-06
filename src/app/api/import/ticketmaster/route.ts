@@ -8,6 +8,8 @@ const API_KEY = process.env.TICKETMASTER_API_KEY;
 type TicketmasterImage = {
   ratio: string;
   url: string;
+  width: number;
+  height: number;
 };
 
 type TicketmasterEvent = {
@@ -67,14 +69,18 @@ export async function GET(request: NextRequest) {
         const eventDate = new Date(dateString);
         if (isNaN(eventDate.getTime())) return null;
 
+        // Wybierz obraz o najwyższej rozdzielczości w formacie 16:9
+        const bestImage = event.images
+          ?.filter((img) => img.ratio === "16_9")
+          .sort((a, b) => b.width - a.width)[0];
+
         const eventData: Prisma.EventCreateInput = {
           name: event.name,
           artist: event._embedded?.attractions?.[0]?.name || "Różni artyści",
           date: eventDate,
           location: event._embedded?.venues?.[0]?.name || "Do ustalenia",
           description: event.info || null,
-          imageUrl:
-            event.images?.find((img) => img.ratio === "16_9")?.url || null,
+          imageUrl: bestImage?.url || null,
           externalId: event.id,
           eventType: EventType.OFFICIAL,
           isVerified: true,

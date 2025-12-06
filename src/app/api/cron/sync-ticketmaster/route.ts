@@ -56,9 +56,15 @@ export async function GET(request: NextRequest) {
         location: event._embedded?.venues?.[0]?.name || "Do ustalenia",
         description: event.info || null,
         imageUrl:
-          event.images?.find(
-            (img: { ratio?: string; url?: string }) => img.ratio === "16_9"
-          )?.url || null,
+          event.images
+            ?.filter(
+              (img: { ratio?: string; url?: string; width?: number }) =>
+                img.ratio === "16_9"
+            )
+            .sort(
+              (a: { width?: number }, b: { width?: number }) =>
+                (b.width || 0) - (a.width || 0)
+            )[0]?.url || null,
         externalId: event.id,
         sourceUrl: event.url || "https://www.ticketmaster.com",
         eventType: EventType.OFFICIAL,
