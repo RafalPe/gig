@@ -14,6 +14,7 @@ const customJestConfig = {
     "^@/app/(.*)$": "<rootDir>/src/app/$1",
   },
   preset: "ts-jest",
+  testPathIgnorePatterns: ["<rootDir>/e2e/"],
 };
 
 export default createJestConfig(customJestConfig);
