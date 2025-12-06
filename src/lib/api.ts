@@ -1,10 +1,21 @@
 import { Event } from "@/types";
 
-export async function getEvents(searchQuery: string | null): Promise<Event[]> {
-  const searchParam = searchQuery ? `?search=${searchQuery}` : "";
+export type EventsResponse = {
+  events: Event[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
 
+export async function getEvents(searchQuery: string | null, page: number = 1): Promise<EventsResponse> {
+  const searchParam = searchQuery ? `&search=${searchQuery}` : "";
+  
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/events${searchParam}`, {
+  
+  const res = await fetch(`${baseUrl}/api/events?page=${page}${searchParam}`, {
     cache: "no-store",
   });
 

@@ -4,6 +4,9 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
+
+const ITEMS_PER_PAGE = 15;
+
 const eventCreateSchema = z.object({
   name: z.string().min(3, "Nazwa wydarzenia musi mieć co najmniej 3 znaki"),
   artist: z.string().min(1, "Artysta jest wymagany"),
@@ -22,8 +25,12 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("search");
+    
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || String(ITEMS_PER_PAGE));
+    const skip = (page - 1) * limit;
 
-    const whereCondition = query
+    const whereCondition: Prisma.EventWhereInput = query
       ? {
           AND: [
             { isVerified: true },
@@ -50,11 +57,26 @@ export async function GET(request: NextRequest) {
         }
       : { isVerified: true };
 
-    const events = await prisma.event.findMany({
-      where: whereCondition,
-      orderBy: { date: "asc" },
+
+    const [events, totalCount] = await prisma.$transaction([
+      prisma.event.findMany({
+        where: whereCondition,
+        orderBy: { date: "asc" },
+        take: limit,
+        skip: skip,
+      }),
+      prisma.event.count({ where: whereCondition }),
+    ]);
+
+    return NextResponse.json({
+      events,
+      pagination: {
+        total: totalCount,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(totalCount / limit),
+      },
     });
-    return NextResponse.json(events);
   } catch (error) {
     console.error("Failed to fetch events:", error);
     return NextResponse.json(
@@ -66,7 +88,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id?: string })?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -74,21 +96,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
- const result = eventCreateSchema.safeParse(body);
+    
+    const result = eventCreateSchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json(
         { 
           error: "Błąd walidacji danych", 
-          details: result.error.format() 
+          details: z.flattenError(result.error)   
         }, 
         { status: 400 }
       );
     }
 
-const { name, artist, date, location, description, imageUrl, sourceUrl } = result.data;
+    const { name, artist, date, location, description, imageUrl, sourceUrl } = result.data;
 
-  const newEvent = await prisma.event.create({
+    const newEvent = await prisma.event.create({
       data: {
         name,
         artist,
