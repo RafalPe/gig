@@ -80,5 +80,20 @@ for (const file of project.getSourceFiles()) {
     imp.setOrder(minIndex + index);
   });
 
+  const lastImport = sortedImports[sortedImports.length - 1];
+  if (lastImport) {
+    const nextSibling = lastImport.getNextSibling();
+    if (nextSibling) {
+      const start = lastImport.getEnd();
+      const end = nextSibling.getStart();
+      const gap = file.getFullText().slice(start, end);
+      
+      // Ensure at least one blank line (two newlines)
+      if (!gap.includes('\n\n') && !gap.includes('\r\n\r\n')) {
+        file.insertText(start, "\n");
+      }
+    }
+  }
+
   file.saveSync();
 }
