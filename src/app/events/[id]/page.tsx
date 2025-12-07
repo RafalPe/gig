@@ -5,9 +5,14 @@ import { getServerSession } from "next-auth/next";
 import { notFound } from "next/navigation";
 import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
 import GroupsList from "@/components/features/groups/GroupsList";
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Image from "next/image";
 import Link from "next/link";
+
 async function getEventDetails(id: string): Promise<Event | null> {
-  const res = await fetch(`http://localhost:3000/api/events/${id}`, {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/events/${id}`, {
     cache: "no-store",
   });
 
@@ -25,7 +30,7 @@ async function getEventDetails(id: string): Promise<Event | null> {
 export default async function EventDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 
@@ -39,103 +44,121 @@ export default async function EventDetailsPage({
   }
 
   return (
-    <Container>
+    <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        <Button component={Link} href="/" variant="outlined" sx={{ mb: 2 }}>
+        <Button component={Link} href="/" variant="outlined" sx={{ mb: 3 }}>
           &larr; Wróć do listy
         </Button>
 
         <Paper
           elevation={3}
-          sx={{ borderRadius: 3, overflow: "hidden", mb: 4 }}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            mb: 5,
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            backgroundColor: "background.paper",
+          }}
         >
           <Box
             sx={{
-              height: 300,
-              backgroundImage: `url(${
-                event.imageUrl || "/images/gig-placeholder.png"
-              })`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              width: { xs: "100%", md: "40%" },
+              minHeight: { xs: 300, md: 400 },
               position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-              p: 3,
-              color: "white",
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
-              },
+              bgcolor: "grey.100",
             }}
           >
-            <Box sx={{ position: "relative" }}>
-              <Typography variant="h3" component="h1" gutterBottom>
-                {event.name}
-              </Typography>
-              <Typography variant="h5" color="inherit">
-                {event.artist}
-              </Typography>
+            <Image
+              src={event.imageUrl || "/images/gig-placeholder.png"}
+              alt={event.name}
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+            />
+          </Box>
+
+          <Box
+            sx={{
+              width: { xs: "100%", md: "60%" },
+              p: { xs: 3, md: 5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              variant="h3"
+              component="h1"
+              gutterBottom
+              sx={{ fontWeight: "bold", color: "text.primary" }}
+            >
+              {event.name}
+            </Typography>
+            <Typography
+              variant="h4"
+              color="primary.main"
+              gutterBottom
+              sx={{ mb: 3, fontWeight: "medium" }}
+            >
+              {event.artist}
+            </Typography>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <CalendarTodayIcon color="action" />
+                <Typography variant="h6">
+                  {new Date(event.date).toLocaleString("pl-PL", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <LocationOnIcon color="action" />
+                <Typography variant="h6">{event.location}</Typography>
+              </Box>
             </Box>
+
+            {event.description && (
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  O wydarzeniu:
+                </Typography>
+                <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
+                  {event.description}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Paper>
 
-        <Box sx={{ my: 4 }}>
+        <Box>
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md: "5fr 7fr",
-              },
-              gap: 4,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              mb: 3,
+              pb: 2,
+              borderBottom: 1,
+              borderColor: "divider",
             }}
           >
-            <Box>
-              <Typography variant="h5" gutterBottom>
-                Szczegóły
-              </Typography>
-              <Paper elevation={1} sx={{ p: 3, height: "100%" }}>
-                <Typography variant="body1">
-                  <strong>Gdzie:</strong> {event.location}
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 1 }}>
-                  <strong>Kiedy:</strong>{" "}
-                  {new Date(event.date).toLocaleString("pl-PL", {
-                    dateStyle: "full",
-                    timeStyle: "short",
-                  })}
-                </Typography>
-                {event.description && (
-                  <Typography variant="body1" sx={{ mt: 2 }}>
-                    {event.description}
-                  </Typography>
-                )}
-              </Paper>
-            </Box>
-
-            <Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h5">Ekipy na to wydarzenie</Typography>
-                {session && <CreateGroupForm eventId={event.id} />}
-              </Box>
-              <GroupsList eventId={event.id} session={session} />
-            </Box>
+            <Typography variant="h4" component="h2" fontWeight="bold">
+              Ekipy na to wydarzenie
+            </Typography>
+            {session && <CreateGroupForm eventId={event.id} />}
           </Box>
+          
+          <GroupsList eventId={event.id} session={session} />
         </Box>
       </Box>
     </Container>
