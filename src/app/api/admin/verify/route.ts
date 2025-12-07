@@ -1,10 +1,9 @@
+import { auth } from "@/lib/auth";
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 async function isAdmin(_request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id) return false;
 
   const user = await prisma.user.findUnique({

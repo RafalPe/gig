@@ -1,5 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth/next";
+import { auth } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -7,7 +6,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ groupId: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const userId = (session?.user as { id?: string })?.id;
 
   if (!userId) {

@@ -1,8 +1,8 @@
 import "./globals.css";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import { Container } from "@mui/material";
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
+
 import { Toaster } from "react-hot-toast";
 import NavBar from "@/components/layout/NavBar";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -19,7 +19,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <html lang="pl">

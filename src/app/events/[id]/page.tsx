@@ -1,7 +1,7 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 import { Event } from "@/types";
 import { Typography, Box, Paper, Container } from "@mui/material";
-import { getServerSession } from "next-auth/next";
+
 import { notFound } from "next/navigation";
 import EventBackButton from "@/components/features/events/EventBackButton";
 import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
@@ -36,7 +36,7 @@ export default async function EventDetailsPage({
 
   const [event, session] = await Promise.all([
     getEventDetails(id),
-    getServerSession(authOptions),
+    auth(),
   ]);
 
   if (!event) {
