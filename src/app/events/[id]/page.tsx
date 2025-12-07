@@ -1,14 +1,14 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Event } from "@/types";
-import { Typography, Box, Paper, Button, Container } from "@mui/material";
+import { Typography, Box, Paper, Container } from "@mui/material";
 import { getServerSession } from "next-auth/next";
 import { notFound } from "next/navigation";
+import EventBackButton from "@/components/features/events/EventBackButton";
 import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
 import GroupsList from "@/components/features/groups/GroupsList";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Image from "next/image";
-import Link from "next/link";
 
 async function getEventDetails(id: string): Promise<Event | null> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -46,9 +46,7 @@ export default async function EventDetailsPage({
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        <Button component={Link} href="/" variant="outlined" sx={{ mb: 3 }}>
-          &larr; Wróć do listy
-        </Button>
+        <EventBackButton />
 
         <Paper
           elevation={3}
