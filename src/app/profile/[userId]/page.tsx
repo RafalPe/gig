@@ -1,47 +1,34 @@
-import {
-  Container,
-  Typography,
-  Box,
-  Paper,
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
-import { notFound } from "next/navigation";
-
-type Group = {
-  id: string;
-  name: string;
-};
-
-type GroupMembership = {
-  group: Group;
-};
+import { Container, Typography, Box, Paper, Avatar, List, ListItem, ListItemText } from '@mui/material';
+import { notFound } from 'next/navigation';
 
 type UserProfile = {
   id: string;
-  name: string;
-  image?: string | null;
+  name: string | null;
+  image: string | null;
   createdAt: string;
-  groupsMemberOf: GroupMembership[];
+  groupsMemberOf: {
+    group: {
+      id: string;
+      name: string;
+    };
+  }[];
 };
 
 async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
-    cache: "no-store",
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  
+  const res = await fetch(`${baseUrl}/api/users/${userId}`, {
+    cache: 'no-store',
   });
+  
   if (!res.ok) return null;
-  const data = await res.json();
-  return data as UserProfile;
+  return res.json();
 }
 
-export default async function UserProfilePage({
-  params,
-}: {
-  params: { userId: string };
-}) {
-  const user = await getUserProfile(params.userId);
+export default async function UserProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
+  
+  const user = await getUserProfile(userId);
 
   if (!user) {
     notFound();
@@ -49,14 +36,7 @@ export default async function UserProfilePage({
 
   return (
     <Container maxWidth="md">
-      <Box
-        sx={{
-          my: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ my: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Paper sx={{ p: 4, width: "100%" }}>
           <Avatar
             src={user.image || undefined}
@@ -68,18 +48,22 @@ export default async function UserProfilePage({
           <Typography variant="body1" color="text.secondary" align="center">
             Dołączył {new Date(user.createdAt).toLocaleDateString("pl-PL")}
           </Typography>
-
+          
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6" gutterBottom>
               Ekipy, do których należy:
             </Typography>
-            <List>
-              {user.groupsMemberOf.map((membership: GroupMembership) => (
-                <ListItem key={membership.group.id}>
-                  <ListItemText primary={membership.group.name} />
-                </ListItem>
-              ))}
-            </List>
+            {user.groupsMemberOf.length > 0 ? (
+              <List>
+                {user.groupsMemberOf.map((membership) => (
+                  <ListItem key={membership.group.id} divider>
+                    <ListItemText primary={membership.group.name} />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography color="text.secondary" align="center">Brak aktywnych ekip.</Typography>
+            )}
           </Box>
         </Paper>
       </Box>

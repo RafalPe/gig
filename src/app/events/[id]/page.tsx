@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { Event } from "@/types";
 import { Typography, Box, Paper, Container } from "@mui/material";
-
 import { notFound } from "next/navigation";
 import EventBackButton from "@/components/features/events/EventBackButton";
 import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
