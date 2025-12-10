@@ -2,6 +2,7 @@
 
 import { Pagination, PaginationItem, Box, Select, SelectChangeEvent, FormControl, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import Link from 'next/link';
 
 type Props = {
@@ -19,6 +20,21 @@ export default function EventsPagination({ count, page, limit, currentSearch }: 
     const searchPart = currentSearch ? `&search=${currentSearch}` : '';
     router.push(`/?page=1&limit=${newLimit}${searchPart}`);
   };
+
+useEffect(() => {
+    const searchPart = currentSearch ? `&search=${currentSearch}` : '';
+    const limitPart = `&limit=${limit}`;
+
+    if (page < count) {
+      const nextPageUrl = `/?page=${page + 1}${limitPart}${searchPart}`;
+      router.prefetch(nextPageUrl);
+    }
+
+    if (page > 1) {
+      const prevPageUrl = `/?page=${page - 1}${limitPart}${searchPart}`;
+      router.prefetch(prevPageUrl);
+    }
+  }, [page, count, limit, currentSearch, router]);
 
   return (
     <Box 
