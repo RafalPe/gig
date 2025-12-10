@@ -1,5 +1,0 @@
-# Test synchronizacji Cron Joba z Ticketmaster
-@cronSecret = Bearer HDN,qY~a!sXIq$@f8T~!}g0mIq_;r!_FT5s,u=~&-J2C)=00Vs
-
-GET http://localhost:3000/api/cron/sync-ticketmaster
-Authorization: {{cronSecret}}
