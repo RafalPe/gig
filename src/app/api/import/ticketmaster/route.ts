@@ -1,34 +1,11 @@
-import { EventType, Prisma } from "@prisma/client";
+import { TicketmasterEvent } from "@/types";
+import { EventType, Prisma, Event as EventModel } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+
 const TICKETMASTER_API_URL =
   "https://app.ticketmaster.com/discovery/v2/events.json";
 const API_KEY = process.env.TICKETMASTER_API_KEY;
-
-type TicketmasterImage = {
-  ratio: string;
-  url: string;
-  width: number;
-  height: number;
-};
-
-type TicketmasterEvent = {
-  id: string;
-  name: string;
-  dates?: {
-    start?: {
-      dateTime?: string;
-      localDate?: string;
-    };
-  };
-  _embedded?: {
-    attractions?: Array<{ name: string }>;
-    venues?: Array<{ name: string }>;
-  };
-  info?: string;
-  images?: TicketmasterImage[];
-  url?: string;
-};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -69,16 +46,28 @@ export async function GET(request: NextRequest) {
         const eventDate = new Date(dateString);
         if (isNaN(eventDate.getTime())) return null;
 
-        // Wybierz obraz o najwyższej rozdzielczości w formacie 16:9
         const bestImage = event.images
           ?.filter((img) => img.ratio === "16_9")
           .sort((a, b) => b.width - a.width)[0];
+
+        const venue = event._embedded?.venues?.[0];
+        const venueName = venue?.name;
+        const cityName = venue?.city?.name;
+
+        let locationString = "Do ustalenia";
+        if (venueName && cityName) {
+          locationString = `${venueName}, ${cityName}`;
+        } else if (venueName) {
+          locationString = venueName;
+        } else if (cityName) {
+          locationString = cityName;
+        }
 
         const eventData: Prisma.EventCreateInput = {
           name: event.name,
           artist: event._embedded?.attractions?.[0]?.name || "Różni artyści",
           date: eventDate,
-          location: event._embedded?.venues?.[0]?.name || "Do ustalenia",
+          location: locationString,
           description: event.info || null,
           imageUrl: bestImage?.url || null,
           externalId: event.id,
@@ -93,7 +82,7 @@ export async function GET(request: NextRequest) {
           create: eventData,
         });
       })
-      .filter((op) => op !== null);
+      .filter((op): op is Prisma.Prisma__EventClient<EventModel, never> => op !== null);
 
     if (upsertOperations.length > 0) {
       await prisma.$transaction(upsertOperations);

@@ -67,3 +67,28 @@ export type DashboardData = {
   myGroups: DashboardGroup[];
   myEvents: DashboardEvent[];
 };
+
+export type TicketmasterImage = {
+  ratio: string;
+  url: string;
+  width: number;
+  height: number;
+};
+
+export type TicketmasterEvent = {
+  id: string;
+  name: string;
+  dates?: {
+    start?: {
+      dateTime?: string;
+      localDate?: string;
+    };
+  };
+  _embedded?: {
+    attractions?: Array<{ name: string }>;
+    venues?: Array<{ name: string; city?: { name: string } }>;
+  };
+  info?: string;
+  images?: TicketmasterImage[];
+  url?: string;
+};
