@@ -1,15 +1,14 @@
 import { auth } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { pusherServer } from "@/lib/pusher";
+import { NextResponse, NextRequest } from 'next/server';
 import prisma from "@/lib/prisma";
-
-type SessionUserWithId = { id?: string | null };
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await auth();
-  if (!(session?.user as SessionUserWithId)?.id) {
+  if (!session?.user?.id) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
@@ -17,21 +16,17 @@ export async function GET(
     const { groupId } = await params;
 
     const messages = await prisma.message.findMany({
-      where: {
-        groupId,
-      },
+      where: { groupId: groupId },
       include: {
         author: {
           select: { id: true, name: true, image: true },
         },
       },
-      orderBy: {
-        createdAt: "asc",
-      },
+      orderBy: { createdAt: "asc" },
     });
     return NextResponse.json(messages);
   } catch (error) {
-    console.error(error);
+    console.error('Failed to fetch messages:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
@@ -41,25 +36,25 @@ export async function POST(
   { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await auth();
-  const userId = (session?.user as SessionUserWithId)?.id;
+  const userId = session?.user?.id;
 
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   try {
+    const { groupId } = await params;
     const { content } = await request.json();
+
     if (!content) {
       return new NextResponse("Content is required", { status: 400 });
     }
-
-    const { groupId } = await params;
 
     const newMessage = await prisma.message.create({
       data: {
         content,
         authorId: userId,
-        groupId,
+        groupId: groupId,
       },
       include: {
         author: {
@@ -67,9 +62,12 @@ export async function POST(
         },
       },
     });
+
+    await pusherServer.trigger(`group-chat-${groupId}`, 'new-message', newMessage);
+
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("Failed to send message:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
