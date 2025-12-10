@@ -69,6 +69,7 @@ export default function NotificationsBell() {
           vertical: "top",
           horizontal: "right",
         }}
+        disableScrollLock
       >
         <Box sx={{ width: 300 }}>
           {notifications.length > 0 ? (
