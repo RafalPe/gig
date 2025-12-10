@@ -8,7 +8,9 @@ test.describe('User Flow', () => {
     await expect(page.getByRole('heading', { name: /Nadchodzące Wydarzenia/i })).toBeVisible();
 
     const searchInput = page.getByPlaceholder('Szukaj wydarzeń (np. artysta, miasto...)');
-    await searchInput.fill("Open'er");
+    await searchInput.click();
+    await searchInput.pressSequentially("Open'er", { delay: 100 });
+    await expect(searchInput).toHaveValue("Open'er");
     
     await searchInput.press('Enter');
 
@@ -23,6 +25,6 @@ test.describe('User Flow', () => {
 
     await expect(page.getByRole('heading', { name: "Open'er Festival", level: 1 })).toBeVisible();
 
-    await expect(page.getByText('Ekipy na to wydarzenie')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ekipy na to wydarzenie' })).toBeVisible();
   });
 });
