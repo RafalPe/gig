@@ -26,7 +26,7 @@ export default function NavBar({ session }: { session: Session | null }) {
         color: 'text.primary',
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: 70 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
             <Box
