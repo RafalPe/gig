@@ -26,6 +26,7 @@ import MembersListModal from "./MembersListModal";
 import MessageBoard from "./MessageBoard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
+
 export default function GroupsList({
   eventId,
   session,
@@ -33,7 +34,6 @@ export default function GroupsList({
   eventId: string;
   session: Session | null;
 }) {
-
   const { data: groups = [], isLoading, isError } = useGetGroupsQuery(eventId);
 
   const [modalState, setModalState] = useState<{
@@ -238,11 +238,12 @@ export default function GroupsList({
               </AccordionDetails>
             </Accordion>
 
-            {isMember && (
-              <Box sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
-                <MessageBoard groupId={group.id} />
-              </Box>
-            )}
+            <Box sx={{ p: 2, borderTop: 1, borderColor: "divider" }}>
+              <MessageBoard
+                groupId={group.id}
+                isMember={!!isMember}
+              />
+            </Box>
           </Paper>
         );
       })}
