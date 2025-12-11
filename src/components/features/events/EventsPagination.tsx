@@ -1,6 +1,6 @@
 'use client';
 
-import { Pagination, PaginationItem, Box, Select, SelectChangeEvent, FormControl, Typography } from '@mui/material';
+import { Pagination, PaginationItem, Box, Select, SelectChangeEvent, FormControl, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
@@ -14,6 +14,8 @@ type Props = {
 
 export default function EventsPagination({ count, page, limit, currentSearch }: Props) {
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleLimitChange = (event: SelectChangeEvent) => {
     const newLimit = event.target.value;
@@ -51,7 +53,9 @@ useEffect(() => {
         page={page}
         count={count}
         color="primary"
-        size="large"
+        size={isMobile ? "medium" : "large"}
+        siblingCount={isMobile ? 0 : 1}
+        boundaryCount={1}
         renderItem={(item) => (
           <PaginationItem
             component={Link}
