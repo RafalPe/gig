@@ -72,6 +72,18 @@ I refactored standard `useEffect` fetching to RTK Query. This provides automatic
 
 ---
 
+## ⚡ Performance
+
+I prioritize user experience by maintaining high performance standards. I actively monitor Web Vitals using **Vercel Speed Insights**.
+
+*   🚀 **100/100 Performance Score:** Achieved through rigorous optimization.
+*   **Key Techniques:**
+    *   Extensive use of **Server Components** to reduce client bundle size.
+    *   **Image Optimization** via `next/image` and proper sizing.
+    *   **Route Prefetching** for instant page transitions.
+
+---
+
 ## ⚙️ Local Setup
 
 1. **Clone the repository:**
