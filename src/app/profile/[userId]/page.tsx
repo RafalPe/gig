@@ -1,5 +1,8 @@
-import { Container, Typography, Box, Paper, Avatar, List, ListItem, ListItemText } from '@mui/material';
+import { Container, Typography, Box, Paper, Avatar, Chip, Divider } from '@mui/material';
 import { notFound } from 'next/navigation';
+import ProfileGroupCard from '@/components/features/profile/ProfileGroupCard';
+import EventIcon from '@mui/icons-material/Event';
+import HistoryIcon from '@mui/icons-material/History';
 
 type UserProfile = {
   id: string;
@@ -10,6 +13,13 @@ type UserProfile = {
     group: {
       id: string;
       name: string;
+      event: {
+        id: string;
+        name: string;
+        date: string;
+        imageUrl: string | null;
+        location: string;
+      };
     };
   }[];
 };
@@ -34,38 +44,105 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
     notFound();
   }
 
+ const now = new Date();
+  const upcomingGroups = user.groupsMemberOf.filter(
+    (m) => new Date(m.group.event.date) >= now
+  );
+  const pastGroups = user.groupsMemberOf.filter(
+    (m) => new Date(m.group.event.date) < now
+  );
+
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Paper sx={{ p: 4, width: "100%" }}>
+  <Container maxWidth="md">
+      <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={3} sx={{ p: 4, width: '100%', mb: 4, borderRadius: 3, textAlign: 'center' }}>
           <Avatar
             src={user.image || undefined}
-            sx={{ width: 120, height: 120, mb: 2, mx: "auto" }}
+            sx={{ width: 120, height: 120, mb: 2, mx: 'auto', border: '4px solid white', boxShadow: 3 }}
           />
-          <Typography variant="h4" component="h1" align="center" gutterBottom>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
             {user.name}
           </Typography>
-          <Typography variant="body1" color="text.secondary" align="center">
-            Dołączył {new Date(user.createdAt).toLocaleDateString("pl-PL")}
+          <Typography variant="body1" color="text.secondary">
+            Dołączył {new Date(user.createdAt).toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' })}
           </Typography>
           
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Ekipy, do których należy:
-            </Typography>
-            {user.groupsMemberOf.length > 0 ? (
-              <List>
-                {user.groupsMemberOf.map((membership) => (
-                  <ListItem key={membership.group.id} divider>
-                    <ListItemText primary={membership.group.name} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Typography color="text.secondary" align="center">Brak aktywnych ekip.</Typography>
-            )}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+            <Chip label={`${user.groupsMemberOf.length} Wydarzeń`} color="primary" variant="outlined" />
           </Box>
         </Paper>
+
+        <Box sx={{ width: '100%', mb: 6 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+            <EventIcon color="primary" />
+            <Typography variant="h5" fontWeight="bold">Nadchodzące Plany</Typography>
+          </Box>
+          
+          {upcomingGroups.length > 0 ? (
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                },
+              }}
+            >
+              {upcomingGroups.map((membership) => (
+                <ProfileGroupCard
+                  key={membership.group.id}
+                  groupName={membership.group.name}
+                  eventId={membership.group.event.id}
+                  eventName={membership.group.event.name}
+                  eventDate={membership.group.event.date}
+                  imageUrl={membership.group.event.imageUrl}
+                  isPast={false}
+                />
+              ))}
+            </Box>
+          ) : (
+            <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'grey.50' }}>
+              <Typography color="text.secondary">Użytkownik nie ma obecnie zaplanowanych wydarzeń.</Typography>
+            </Paper>
+          )}
+        </Box>
+
+        <Divider sx={{ width: '100%', mb: 6 }} />
+
+        {pastGroups.length > 0 && (
+          <Box sx={{ width: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+              <HistoryIcon color="action" />
+              <Typography variant="h5" fontWeight="bold" color="text.secondary">Historia Koncertowa</Typography>
+            </Box>
+            
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                },
+              }}
+            >
+              {pastGroups.map((membership) => (
+                <ProfileGroupCard
+                  key={membership.group.id}
+                  groupName={membership.group.name}
+                  eventId={membership.group.event.id}
+                  eventName={membership.group.event.name}
+                  eventDate={membership.group.event.date}
+                  imageUrl={membership.group.event.imageUrl}
+                  isPast={true}
+                />
+              ))}
+            </Box>
+          </Box>
+        )}
       </Box>
     </Container>
   );

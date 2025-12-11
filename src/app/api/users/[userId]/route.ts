@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse, NextRequest } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
@@ -15,21 +15,40 @@ export async function GET(
         image: true,
         createdAt: true,
         groupsMemberOf: {
-          select: {
+          include: {
             group: {
-              select: { id: true, name: true },
-            },
+              select: {
+                id: true,
+                name: true,
+                event: {
+                  select: {
+                    id: true,
+                    name: true,
+                    date: true,
+                    imageUrl: true,
+                    location: true,
+                  }
+                }
+              }
+            }
           },
+          orderBy: {
+            group: {
+              event: {
+                date: 'desc'
+              }
+            }
+          }
         },
       },
     });
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return new NextResponse('User not found', { status: 404 });
     }
     return NextResponse.json(user);
   } catch (error) {
     console.error(error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
