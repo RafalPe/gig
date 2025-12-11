@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 
 export default function PageTransition({ 
   children, 
@@ -16,9 +16,6 @@ export default function PageTransition({
   duration?: number; 
   delay?: number;    
 }) {
-   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   return (
     <motion.div
       initial={{ opacity: 0, y: yOffset }} 

@@ -1,8 +1,10 @@
 import { Container, Box, Skeleton, Paper } from "@mui/material";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default function LoadingEventDetails() {
   return (
     <Container maxWidth="lg">
+      <ScrollToTop />
       <Box sx={{ my: 4 }}>
         <Skeleton variant="rectangular" width={120} height={36} sx={{ mb: 3, borderRadius: 1 }} />
 
@@ -27,7 +29,6 @@ export default function LoadingEventDetails() {
             <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
           </Box>
 
-          {/* PRAWA STRONA: Miejsce na tekst */}
           <Box
             sx={{
               width: { xs: '100%', md: '60%' },
