@@ -1,139 +1,144 @@
 # 🎵 GigBuddies (Work in Progress)
+ 
+> 🚧 **Project Status:** Under active development. Deployed on Vercel.
 
-> 🚧 **Project Status:** Under active development. Core features are implemented; optimization and expansion of social features are ongoing.
-
-**GigBuddies** is a full-stack web platform that connects music fans. It allows users to discover concerts, create "crews" (groups) for events, and communicate with each other. The project integrates official data (from the Ticketmaster API) with community-created events.
+**GigBuddies** is a full-stack web platform that connects music fans. It allows users to discover concerts, create "crews" (groups) for events, and communicate in real-time. The project integrates official data (from the Ticketmaster API) with community-created events, featuring a robust moderation system.
 
 ## 🚀 Key Features
 
-### For Users
-* **Event Discovery:** Browse and search for concerts (integration with Ticketmaster API + local database).
+### 🎧 For Users
+
+* **Advanced Discovery:**
+    * Server-side search with Debouncing.
+    * Optimized Pagination with Prefetching for instant navigation.
+    * Filter by verified/official events.
 * **Crew Management:**
     * Create groups for specific events.
-    * Join and leave groups (implemented with **Optimistic UI** for instant interface response).
-    * View the list of crew members.
-* **Community:**
-    * Message board (chat) within each group.
-    * User profiles.
-    * Notifications about new members.
-* **Event Submission:** Submission form for users (requires admin verification).
+    * **Optimistic UI:** Instant feedback when joining/leaving groups (powered by RTK Query).
+* **Real-Time Chat:** Live messaging within groups using Pusher (WebSockets).
+* **User Dashboard:**
+    * **My Crews:** Manage joined groups.
+    * **My Submissions:** Track status of submitted events (Pending/Verified).
+    * **Profile Settings:** Edit profile details.
+* **Event Submission:** Users can submit events (requires Admin verification).
+* **Safety & Logic:** Users cannot delete an event if active groups exist – a "Deletion Request" flow is triggered instead.
 
-### For Administrators
-* **Verification Panel:** Review and approve events submitted by users.
-* **Data Import:** Tool for bulk importing events from the Ticketmaster API.
+### 🛡️ For Administrators
+
+* **Verification Panel:** Review and approve/reject user-submitted events.
+* **Request Handling:** Review deletion requests from organizers who want to cancel events with active users.
+* **Data Import:** Automated Cron Job (or manual trigger) to sync events from Ticketmaster API.
 
 ---
 
 ## 🛠️ Tech Stack
 
-The project was built based on modern standards and best practices (as of 2025).
-
 ### Frontend
 * **Framework:** [Next.js 15](https://nextjs.org/) (App Router, Server Components).
 * **Language:** TypeScript.
-* **State Management:** [Redux Toolkit](https://redux-toolkit.js.org/) + **RTK Query** (for server state management, caching, and tag invalidation).
-* **UI:** [Material UI (MUI v5)](https://mui.com/) with a custom theme and responsive design.
-* **Forms & Dates:** `react-hot-toast`, `@mui/x-date-pickers`.
-* **Animations:** Framer Motion.
+* **State Management:** [Redux Toolkit](https://redux-toolkit.js.org/) + **RTK Query** (Caching, Invalidation, Optimistic Updates).
+* **Real-Time:** Pusher (WebSockets).
+* **UI:** [Material UI (MUI v5)](https://mui.com/) + Framer Motion (Animations).
+* **Forms:** React Hot Toast + Zod Validation.
 
 ### Backend & Database
-* **API:** Next.js Route Handlers (REST API).
-* **Database:** PostgreSQL.
-* **ORM:** [Prisma](https://www.prisma.io/) (data modeling, migrations, seeding).
-* **Authentication:** [NextAuth.js](https://next-auth.js.org/) (GitHub Provider, Prisma adapter).
-* **Integrations:** Ticketmaster Discovery API.
+* **API:** Next.js Route Handlers (REST).
+* **Database:** PostgreSQL (hosted on Neon/Vercel).
+* **ORM:** [Prisma](https://www.prisma.io/) (Schema, Migrations, Seeding).
+* **Auth:** [NextAuth.js](https://next-auth.js.org/) (GitHub OAuth).
+* **Scheduling:** Vercel Cron Jobs.
 
-### Code Quality (QA)
-* **Testing:** Jest + React Testing Library (Unit & Integration tests).
-* **CI/CD (Local):** Husky + lint-staged.
-    * `pre-commit`: Automatic ESLint and formatting.
-    * `pre-push`: Blocks code push if tests fail or TypeScript reports errors.
+### QA & CI/CD
+* **E2E Testing:** Playwright (with isolated Docker DB).
+* **Unit/Integration:** Jest + React Testing Library.
+* **Git Hooks:** Husky (pre-commit linting, pre-push testing).
 
 ---
 
-## 💡 Key Design Decisions (Why?)
+## 💡 Architectural Decisions
 
-> **⚠️ Note on Redux:** I am aware that using Redux in a Next.js project is often considered overkill. However, I chose to use it here **intentionally** to refresh my knowledge and demonstrate skills. In a standard scenario, I would rely primarily on Server State.
+> **⚠️ Note on Redux:** I am aware that using Redux in a Next.js project is often considered overkill. However, I chose to use it here **intentionally** to demonstrate proficiency with this ecosystem and to handle complex client-side patterns like Optimistic UI.
 
-1.  **RTK Query instead of `useEffect`:**
-    In the initial phase, data was fetched manually. I decided to refactor to RTK Query to eliminate boilerplate, gain automatic caching, and – most importantly – automatic data revalidation (e.g., the group list refreshes itself after a user joins thanks to the Tag system).
+### 1. Real-Time Chat (Pusher vs Polling)
+Instead of polling the database every few seconds (which kills serverless limits), I implemented Event-Driven Architecture using Pusher. The server publishes an event only when a message is created, and clients react instantly via WebSockets.
 
-2.  **Optimistic UI:**
-    For interactions like "Join group", the application updates the interface immediately, before the server confirms the change. This ensures a feeling of instant app performance. In case of an API error, changes are automatically rolled back.
+### 2. Safety First: The "Deletion Request" Flow
+A common issue in social apps is "trolling" by deleting popular events. I implemented a logic check:
+* **If an event has 0 groups:** The organizer can delete it instantly.
+* **If an event has active groups:** The delete button is replaced by a "Request Deletion" flow. The Admin must review the reason before removing the event, preserving the community's plans.
 
-3.  **PostgreSQL instead of SQLite:**
-    Although SQLite is simpler to start with, the project uses PostgreSQL to handle advanced text filtering (`mode: 'insensitive'`) and ensure compatibility with the production environment (Vercel).
+### 3. RTK Query & Cache Invalidation
+I refactored standard `useEffect` fetching to RTK Query. This provides automatic cache invalidation using Tags. For example, when a user joins a group, the `Group` tag is invalidated, automatically refetching the list without manual state management.
 
 ---
 
 ## ⚙️ Local Setup
 
-To run the project on your local machine:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/RafalPe/gig.git
+   cd gig
+   ```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/RafalPe/gig.git
-    cd gig
-    ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+3. **Configure environment variables:**
+   Create a `.env` file based on the template below:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/gig_dev"
 
-3.  **Configure environment variables:**
-    Create a `.env` file in the root directory and populate it following this pattern:
-    ```env
-    # Database (PostgreSQL)
-    DATABASE_URL="postgresql://user:password@localhost:5432/gig_dev"
+   # NextAuth
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_SECRET="your-secret-key"
+   GITHUB_ID="your-github-id"
+   GITHUB_SECRET="your-github-secret"
 
-    # NextAuth
-    NEXTAUTH_URL="http://localhost:3000"
-    NEXTAUTH_SECRET="your-secret-key"
-    
-    # GitHub OAuth (for login)
-    GITHUB_ID="your-github-id"
-    GITHUB_SECRET="your-github-secret"
+   # Integrations
+   TICKETMASTER_API_KEY="your-ticketmaster-key"
 
-    # External API (optional, required for import)
-    TICKETMASTER_API_KEY="your-ticketmaster-key"
-    
-    # Cron Job Security
-    CRON_SECRET="your-random-token"
-    ```
+   # Pusher (Real-Time)
+   PUSHER_APP_ID="your-app-id"
+   PUSHER_KEY="your-key"
+   PUSHER_SECRET="your-secret"
+   PUSHER_CLUSTER="eu"
+   NEXT_PUBLIC_PUSHER_KEY="your-key"
+   NEXT_PUBLIC_PUSHER_CLUSTER="eu"
 
-4.  **Prepare the database:**
-    ```bash
-    npx prisma migrate dev  # Creates tables
-    npx prisma db seed      # Populates the database with test data (Events, Users)
-    ```
+   # Cron Security
+   CRON_SECRET="your-random-token"
 
-5.  **Run the server:**
-    ```bash
-    npm run dev
-    ```
+   # App URL
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
+   ```
 
-The application will be available at `http://localhost:3000`.
+4. **Setup Database:**
+   ```bash
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+
+5. **Run Development Server:**
+   ```bash
+   npm run dev
+   ```
 
 ---
 
 ## ✅ Testing
 
-The project has a configured testing environment.
-
-* **Run all tests:**
-    ```bash
-    npm run test
-    ```
-* **Check types and tests (pre-push simulation):**
-    ```bash
-    npm run check:all
-    ```
-
----
-
-## 🗺️ Roadmap (Plans)
-
-* [ ] Implement End-to-End (E2E) testing with Cypress/Playwright.
-* [ ] Implement WebSockets (Pusher) for real-time chat.
-* [ ] Expand the user panel (event history).
+* **Unit & Integration:**
+  ```bash
+  npm run test
+  ```
+* **End-to-End (E2E):**
+  ```bash
+  npx playwright test
+  ```
+* **Type Check:**
+  ```bash
+  npm run check:all
+  ```
