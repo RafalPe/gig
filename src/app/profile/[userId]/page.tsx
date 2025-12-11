@@ -52,6 +52,13 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
     (m) => new Date(m.group.event.date) < now
   );
 
+
+  const getEventLabel = (count: number) => {
+    if (count === 1) return 'Wydarzenie';
+    if (count >= 2 && count <= 4) return 'Wydarzenia';
+    return 'Wydarzeń';
+  };
+
   return (
   <Container maxWidth="md">
       <Box sx={{ my: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -68,7 +75,11 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           </Typography>
           
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
-            <Chip label={`${user.groupsMemberOf.length} Wydarzeń`} color="primary" variant="outlined" />
+            <Chip 
+              label={`${user.groupsMemberOf.length} ${getEventLabel(user.groupsMemberOf.length)}`} 
+              color="primary" 
+              variant="outlined" 
+            />
           </Box>
         </Paper>
 
