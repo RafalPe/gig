@@ -4,12 +4,7 @@ export default function LoadingEventDetails() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        <Skeleton
-          variant="rectangular"
-          width={120}
-          height={36}
-          sx={{ mb: 3, borderRadius: 1 }}
-        />
+        <Skeleton variant="rectangular" width={120} height={36} sx={{ mb: 3, borderRadius: 1 }} />
 
         <Paper
           elevation={3}
@@ -26,45 +21,43 @@ export default function LoadingEventDetails() {
             sx={{
               width: { xs: "100%", md: "40%" },
               minHeight: { xs: 300, md: 400 },
-              bgcolor: "grey.100",
+              bgcolor: "grey.200",
             }}
           >
-            <Skeleton variant="rectangular" width="100%" height="100%" />
+            <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
           </Box>
 
+          {/* PRAWA STRONA: Miejsce na tekst */}
           <Box
             sx={{
-              width: { xs: "100%", md: "60%" },
+              width: { xs: '100%', md: '60%' },
               p: { xs: 3, md: 5 },
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
             }}
           >
-            <Skeleton variant="text" width="60%" height={60} sx={{ mb: 1 }} />
-            
-            <Skeleton variant="text" width="40%" height={40} sx={{ mb: 3 }} />
-
+            <Skeleton variant="text" height={60} width="80%" sx={{ mb: 1 }} />
+            <Skeleton variant="text" height={40} width="40%" sx={{ mb: 3 }} />
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Skeleton variant="circular" width={24} height={24} />
-                <Skeleton variant="text" width="50%" height={32} />
+                <Skeleton variant="text" width={200} height={30} />
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Skeleton variant="circular" width={24} height={24} />
-                <Skeleton variant="text" width="30%" height={32} />
+                <Skeleton variant="text" width={150} height={30} />
               </Box>
             </Box>
 
             <Box>
-              <Skeleton variant="text" width="20%" height={24} sx={{ mb: 1 }} />
-              <Skeleton variant="text" width="100%" height={20} />
-              <Skeleton variant="text" width="100%" height={20} />
-              <Skeleton variant="text" width="80%" height={20} />
+              <Skeleton variant="text" width={100} height={24} sx={{ mb: 1 }} />
+              <Skeleton variant="text" width="100%" />
+              <Skeleton variant="text" width="90%" />
+              <Skeleton variant="text" width="95%" />
             </Box>
           </Box>
         </Paper>
-
         <Box>
           <Box
             sx={{
@@ -77,23 +70,20 @@ export default function LoadingEventDetails() {
               borderColor: "divider",
             }}
           >
-            <Skeleton variant="text" width={300} height={40} />
+            <Skeleton variant="text" width={250} height={40} />
             <Skeleton variant="rectangular" width={150} height={36} sx={{ borderRadius: 1 }} />
           </Box>
-          
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-             {[1, 2, 3].map((item) => (
-                <Paper key={item} sx={{ p: 2 }}>
-                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Box>
-                        <Skeleton variant="text" width={200} height={32} sx={{ mb: 1 }} />
-                        <Skeleton variant="text" width={150} height={24} />
-                      </Box>
-                      <Skeleton variant="rectangular" width={100} height={36} sx={{ borderRadius: 1 }} />
-                   </Box>
-                </Paper>
-             ))}
-          </Box>
+          {[1, 2].map((i) => (
+             <Paper key={i} sx={{ mb: 2, p: 2 }}>
+               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                 <Box>
+                   <Skeleton variant="text" width={150} height={32} />
+                   <Skeleton variant="text" width={200} height={20} />
+                 </Box>
+                 <Skeleton variant="rectangular" width={80} height={30} sx={{ borderRadius: 1 }} />
+               </Box>
+             </Paper>
+          ))}
         </Box>
       </Box>
     </Container>

@@ -22,8 +22,8 @@ export default function EventHeaderImage({ src, alt }: { src: string; alt: strin
         fill
         style={{
           objectFit: 'cover',
-          opacity: isLoaded ? 1 : 0, 
-          transition: 'opacity 0.5s ease-in-out', 
+          opacity: isLoaded ? 1 : 0,
+          transition: 'opacity 0.7s ease-in-out', 
         }}
         priority
         sizes="(max-width: 768px) 100vw, 40vw"

@@ -42,44 +42,44 @@ export default async function EventDetailsPage({
 
   return (
     <Container maxWidth="lg">
-      <PageTransition>
-        <Box sx={{ my: 4 }}>
-          <EventBackButton />
+      <Box sx={{ my: 4 }}>
+        <EventBackButton />
 
-          <Paper
-            elevation={3}
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            mb: 5,
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            backgroundColor: "background.paper",
+          }}
+        >
+          <Box
             sx={{
-              borderRadius: 3,
-              overflow: "hidden",
-              mb: 5,
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              backgroundColor: "background.paper",
+              width: { xs: "100%", md: "40%" },
+              minHeight: { xs: 300, md: 400 },
+              position: "relative",
+              bgcolor: "grey.100",
             }}
           >
-            <Box
-              sx={{
-                width: { xs: "100%", md: "40%" },
-                minHeight: { xs: 300, md: 400 },
-                position: "relative",
-                bgcolor: "grey.100",
-              }}
-            >
-              <EventHeaderImage
-                src={event.imageUrl || "/images/gig-placeholder.png"}
-                alt={event.name}
-              />
-            </Box>
+            <EventHeaderImage
+              src={event.imageUrl || "/images/gig-placeholder.png"}
+              alt={event.name}
+            />
+          </Box>
 
-            <Box
-              sx={{
-                width: { xs: "100%", md: "60%" },
-                p: { xs: 3, md: 5 },
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
+          <Box
+            sx={{
+              width: { xs: "100%", md: "60%" },
+              p: { xs: 3, md: 5 },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <PageTransition>
               <Typography
                 variant="h3"
                 component="h1"
@@ -134,33 +134,33 @@ export default async function EventDetailsPage({
                   </Typography>
                 </Box>
               )}
-            </Box>
-          </Paper>
-
-          <Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: 2,
-                mb: 3,
-                pb: 2,
-                borderBottom: 1,
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h4" component="h2" fontWeight="bold">
-                Ekipy na to wydarzenie
-              </Typography>
-              {session && <CreateGroupForm eventId={event.id} />}
-            </Box>
-
-            <GroupsList eventId={event.id} session={session} />
+            </PageTransition>
           </Box>
+        </Paper>
+
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              mb: 3,
+              pb: 2,
+              borderBottom: 1,
+              borderColor: "divider",
+            }}
+          >
+            <Typography variant="h4" component="h2" fontWeight="bold">
+              Ekipy na to wydarzenie
+            </Typography>
+            {session && <CreateGroupForm eventId={event.id} />}
+          </Box>
+
+          <GroupsList eventId={event.id} session={session} />
         </Box>
-      </PageTransition>
+      </Box>
     </Container>
   );
 }
