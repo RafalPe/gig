@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { Event } from "@/types";
 import { Typography, Box, Paper, Container } from "@mui/material";
 import { notFound } from "next/navigation";
+import DynamicEventMap from "@/components/features/events/DynamicEventMap";
 import EventBackButton from "@/components/features/events/EventBackButton";
 import EventHeaderImage from "@/components/features/events/EventHeaderImage";
 import CreateGroupForm from "@/components/features/groups/CreateGroupForm";
@@ -137,28 +138,58 @@ export default async function EventDetailsPage({
             </PageTransition>
           </Box>
         </Paper>
-
-        <Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-              mb: 3,
-              pb: 2,
-              borderBottom: 1,
-              borderColor: "divider",
-            }}
-          >
-            <Typography variant="h4" component="h2" fontWeight="bold">
-              Ekipy na to wydarzenie
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "5fr 7fr" },
+            gap: 4,
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ fontWeight: "bold", mb: 2 }}
+            >
+              Lokalizacja
             </Typography>
-            {session && <CreateGroupForm eventId={event.id} />}
-          </Box>
 
-          <GroupsList eventId={event.id} session={session} />
+            {event.lat && event.lng ? (
+              <DynamicEventMap
+                lat={event.lat}
+                lng={event.lng}
+                locationName={event.location}
+              />
+            ) : (
+              <Paper sx={{ p: 4, textAlign: "center", bgcolor: "grey.50" }}>
+                <LocationOnIcon
+                  sx={{ fontSize: 40, color: "text.disabled", mb: 1 }}
+                />
+                <Typography color="text.secondary">
+                  Mapa niedostępna dla tego wydarzenia.
+                </Typography>
+              </Paper>
+            )}
+          </Box>
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 2,
+                mb: 2,
+              }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                Ekipy
+              </Typography>
+              {session && <CreateGroupForm eventId={event.id} />}
+            </Box>
+
+            <GroupsList eventId={event.id} session={session} />
+          </Box>
         </Box>
       </Box>
     </Container>
