@@ -29,6 +29,7 @@ export default async function Home({
     currentLimit,
     currentFilter
   );
+
   return (
     <Container maxWidth="lg">
       <SuccessToastHandler />
@@ -61,7 +62,11 @@ export default async function Home({
               }}
             >
               {events.map((event) => (
-                <AnimatedCard key={event.id} event={event} />
+                <AnimatedCard
+                  key={event.id}
+                  event={event}
+                  isPast={currentFilter === "past"}
+                />
               ))}
             </Box>
             {(pagination.totalPages > 1 || currentLimit !== 9) && (
