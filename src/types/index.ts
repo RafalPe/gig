@@ -8,6 +8,9 @@ export type Event = {
   createdAt: string;
   updatedAt: string;
   imageUrl: string | null;
+  sourceUrl?: string | null;
+  lat: number | null;
+  lng: number | null;
 };
 
 export type GroupWithMembers = {
@@ -28,7 +31,7 @@ export type GroupWithMembers = {
   }[];
 };
 
-export type RequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type RequestStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 export type DeletionRequest = {
   id: string;
@@ -36,7 +39,6 @@ export type DeletionRequest = {
   reason: string;
   createdAt: string;
 };
-
 
 export type DashboardGroup = {
   id: string;
@@ -86,7 +88,11 @@ export type TicketmasterEvent = {
   };
   _embedded?: {
     attractions?: Array<{ name: string }>;
-    venues?: Array<{ name: string; city?: { name: string } }>;
+    venues?: Array<{
+      name: string;
+      city?: { name: string };
+      location?: { latitude: string; longitude: string };
+    }>;
   };
   info?: string;
   images?: TicketmasterImage[];

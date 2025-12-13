@@ -1,5 +1,5 @@
 import { TicketmasterEvent } from "@/types";
-import { EventType, Prisma, Event as EventModel } from "@prisma/client";
+import { Event, EventType, Prisma } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -54,6 +54,13 @@ export async function GET(request: NextRequest) {
         const venueName = venue?.name;
         const cityName = venue?.city?.name;
 
+        const latitude = venue?.location?.latitude
+          ? parseFloat(venue.location.latitude)
+          : null;
+        const longitude = venue?.location?.longitude
+          ? parseFloat(venue.location.longitude)
+          : null;
+
         let locationString = "Do ustalenia";
         if (venueName && cityName) {
           locationString = `${venueName}, ${cityName}`;
@@ -74,6 +81,8 @@ export async function GET(request: NextRequest) {
           eventType: EventType.OFFICIAL,
           isVerified: true,
           sourceUrl: event.url || "https://www.ticketmaster.com",
+          lat: latitude,
+          lng: longitude,
         };
 
         return prisma.event.upsert({
@@ -82,14 +91,16 @@ export async function GET(request: NextRequest) {
           create: eventData,
         });
       })
-      .filter((op): op is Prisma.Prisma__EventClient<EventModel, never> => op !== null);
+      .filter(
+        (op): op is Prisma.Prisma__EventClient<Event, never> => op !== null
+      );
 
     if (upsertOperations.length > 0) {
       await prisma.$transaction(upsertOperations);
     }
 
     return NextResponse.json({
-      message: `Pomyślnie przetworzono i zaimportowano ${upsertOperations.length} wydarzeń.`,
+      message: `Pomyślnie przetworzono i zaimportowano ${upsertOperations.length} wydarzeń ze współrzędnymi.`,
     });
   } catch (error) {
     console.error(error);

@@ -94,6 +94,8 @@ model Event {
   description String?
   groups      Group[]
   sourceUrl  String?
+  lat         Float?   
+  lng         Float?   
   organizerId String?
   organizer   User?   @relation("EventOrganizer", fields: [organizerId], references: [id])
 
