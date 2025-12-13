@@ -14,6 +14,8 @@ const mockEvents: Event[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     imageUrl: null,
+    lat: null,
+    lng: null,
   },
 ];
 

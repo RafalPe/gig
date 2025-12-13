@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { Event } from "@/types";
 import { render, screen } from "@testing-library/react";
 import EventCard from "./EventCard";
+
 const mockEvent: Event = {
   id: "1",
   name: "Event Name",
@@ -12,6 +13,8 @@ const mockEvent: Event = {
   imageUrl: "/images/gig-placeholder.png",
   createdAt: "2024-01-01T12:00:00.000Z",
   updatedAt: "2024-01-01T12:00:00.000Z",
+  lat: null,
+  lng: null,
 };
 
 describe("EventCard", () => {
