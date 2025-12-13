@@ -19,6 +19,8 @@ const eventCreateSchema = z.object({
     .or(z.literal(""))
     .optional(),
   sourceUrl: z.url({ message: "Nieprawidłowy link do źródła" }),
+  lat: z.number().nullable().optional(),
+  lng: z.number().nullable().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -115,14 +117,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Błąd walidacji danych",
-          details: result.error.format(),
+          details: result.error.issues,
         },
         { status: 400 }
       );
     }
 
-    const { name, artist, date, location, description, imageUrl, sourceUrl } =
-      result.data;
+    const {
+      name,
+      artist,
+      date,
+      location,
+      description,
+      imageUrl,
+      sourceUrl,
+      lat,
+      lng,
+    } = result.data;
 
     const newEvent = await prisma.event.create({
       data: {
@@ -136,6 +147,8 @@ export async function POST(request: NextRequest) {
         organizerId: userId,
         eventType: "USER_SUBMITTED",
         isVerified: false,
+        lat: lat || null,
+        lng: lng || null,
       },
     });
 
