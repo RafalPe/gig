@@ -1,6 +1,7 @@
 import "./globals.css";
 import { auth } from "@/lib/auth";
 import { Container } from "@mui/material";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
@@ -8,7 +9,6 @@ import NavBar from "@/components/layout/NavBar";
 import AuthProvider from "@/components/providers/AuthProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import ThemeRegistry from "@/components/providers/ThemeRegistry";
-
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,6 +32,7 @@ export default async function RootLayout({
               <NavBar session={session} />
               <Container>{children}</Container>
               <SpeedInsights />
+              <Analytics />
             </ThemeRegistry>
           </ReduxProvider>
         </AuthProvider>
