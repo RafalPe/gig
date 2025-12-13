@@ -58,6 +58,13 @@ export async function GET(request: Request) {
         const venueName = venue?.name;
         const cityName = venue?.city?.name;
 
+        const latitude = venue?.location?.latitude
+          ? parseFloat(venue.location.latitude)
+          : null;
+        const longitude = venue?.location?.longitude
+          ? parseFloat(venue.location.longitude)
+          : null;
+
         let locationString = "Do ustalenia";
         if (venueName && cityName) {
           locationString = `${venueName}, ${cityName}`;
@@ -78,6 +85,8 @@ export async function GET(request: Request) {
           sourceUrl: event.url || "https://www.ticketmaster.com",
           eventType: EventType.OFFICIAL,
           isVerified: true,
+          lat: latitude,
+          lng: longitude,
         };
 
         return prisma.event.upsert({
@@ -86,7 +95,9 @@ export async function GET(request: Request) {
           create: eventData,
         });
       })
-     .filter((op): op is Prisma.Prisma__EventClient<EventModel, never> => op !== null);
+      .filter(
+        (op): op is Prisma.Prisma__EventClient<EventModel, never> => op !== null
+      );
 
     if (upsertOperations.length > 0) {
       await prisma.$transaction(upsertOperations);
