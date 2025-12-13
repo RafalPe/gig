@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
-
 import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
@@ -15,55 +14,66 @@ const eventCreateSchema = z.object({
   }),
   location: z.string().min(1, "Lokalizacja jest wymagana"),
   description: z.string().optional(),
- imageUrl: z.url({ message: "Nieprawidłowy link do zdjęcia" })
+  imageUrl: z
+    .url({ message: "Nieprawidłowy link do zdjęcia" })
     .or(z.literal(""))
     .optional(),
- sourceUrl: z.url({ message: "Nieprawidłowy link do źródła" }),
+  sourceUrl: z.url({ message: "Nieprawidłowy link do źródła" }),
 });
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("search");
-    
+
     const page = parseInt(searchParams.get("page") || "1");
-  const limitParam = parseInt(searchParams.get('limit') || '');
-    const limit = (!isNaN(limitParam) && limitParam > 0) ? limitParam : DEFAULT_LIMIT;
-    
+    const limitParam = parseInt(searchParams.get("limit") || "");
+    const limit =
+      !isNaN(limitParam) && limitParam > 0 ? limitParam : DEFAULT_LIMIT;
+    const filter = searchParams.get("filter") || "upcoming";
+
     const skip = (page - 1) * limit;
+    const now = new Date();
 
-    const whereCondition: Prisma.EventWhereInput = query
-      ? {
-          AND: [
-            { isVerified: true },
-            {
-              OR: [
-                {
-                  name: { contains: query, mode: Prisma.QueryMode.insensitive },
-                },
-                {
-                  artist: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
+    const dateCondition: Prisma.DateTimeFilter =
+      filter === "past" ? { lt: now } : { gte: now };
+    const whereCondition: Prisma.EventWhereInput = {
+      AND: [
+        { isVerified: true },
+        { date: dateCondition },
+        ...(query
+          ? [
+              {
+                OR: [
+                  {
+                    name: {
+                      contains: query,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
                   },
-                },
-                {
-                  location: {
-                    contains: query,
-                    mode: Prisma.QueryMode.insensitive,
+                  {
+                    artist: {
+                      contains: query,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
                   },
-                },
-              ],
-            },
-          ],
-        }
-      : { isVerified: true };
-
+                  {
+                    location: {
+                      contains: query,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              },
+            ]
+          : []),
+      ],
+    };
 
     const [events, totalCount] = await prisma.$transaction([
       prisma.event.findMany({
         where: whereCondition,
-        orderBy: { date: "asc" },
+        orderBy: { date: filter === "past" ? "desc" : "asc" },
         take: limit,
         skip: skip,
       }),
@@ -93,25 +103,26 @@ export async function POST(request: NextRequest) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    return new NextResponse("Unauthorized", { status: 401 });
+    return NextResponse.json("Unauthorized", { status: 401 });
   }
 
   try {
     const body = await request.json();
-    
+
     const result = eventCreateSchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json(
-        { 
-          error: "Błąd walidacji danych", 
-          details: z.flattenError(result.error)   
-        }, 
+        {
+          error: "Błąd walidacji danych",
+          details: result.error.format(),
+        },
         { status: 400 }
       );
     }
 
-    const { name, artist, date, location, description, imageUrl, sourceUrl } = result.data;
+    const { name, artist, date, location, description, imageUrl, sourceUrl } =
+      result.data;
 
     const newEvent = await prisma.event.create({
       data: {
@@ -131,6 +142,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newEvent, { status: 201 });
   } catch (error) {
     console.error("Failed to create event:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

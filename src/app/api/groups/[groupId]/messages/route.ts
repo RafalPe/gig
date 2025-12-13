@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { pusherServer } from "@/lib/pusher";
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function GET(
@@ -26,7 +26,7 @@ export async function GET(
     });
     return NextResponse.json(messages);
   } catch (error) {
-    console.error('Failed to fetch messages:', error);
+    console.error("Failed to fetch messages:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
@@ -63,7 +63,11 @@ export async function POST(
       },
     });
 
-    await pusherServer.trigger(`group-chat-${groupId}`, 'new-message', newMessage);
+    await pusherServer.trigger(
+      `group-chat-${groupId}`,
+      "new-message",
+      newMessage
+    );
 
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {

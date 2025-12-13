@@ -1,81 +1,121 @@
-'use client';
-
-import { Pagination, PaginationItem, Box, Select, SelectChangeEvent, FormControl, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import Link from 'next/link';
+"use client";
+import {
+  Pagination,
+  PaginationItem,
+  Box,
+  Select,
+  SelectChangeEvent,
+  FormControl,
+  Typography,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Link from "next/link";
 
 type Props = {
   count: number;
   page: number;
   limit: number;
   currentSearch?: string | null;
+  filter: string;
 };
 
-export default function EventsPagination({ count, page, limit, currentSearch }: Props) {
+export default function EventsPagination({
+  count,
+  page,
+  limit,
+  currentSearch,
+  filter,
+}: Props) {
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const searchPart = currentSearch ? `&search=${currentSearch}` : "";
+  const filterPart = `&filter=${filter}`;
 
   const handleLimitChange = (event: SelectChangeEvent) => {
     const newLimit = event.target.value;
-    const searchPart = currentSearch ? `&search=${currentSearch}` : '';
-    router.push(`/?page=1&limit=${newLimit}${searchPart}`);
+    router.push(`/?page=1&limit=${newLimit}${searchPart}${filterPart}`);
   };
 
-useEffect(() => {
-    const searchPart = currentSearch ? `&search=${currentSearch}` : '';
+  useEffect(() => {
     const limitPart = `&limit=${limit}`;
 
     if (page < count) {
-      const nextPageUrl = `/?page=${page + 1}${limitPart}${searchPart}`;
+      const nextPageUrl = `/?page=${
+        page + 1
+      }${limitPart}${searchPart}${filterPart}`;
       router.prefetch(nextPageUrl);
     }
 
     if (page > 1) {
-      const prevPageUrl = `/?page=${page - 1}${limitPart}${searchPart}`;
+      const prevPageUrl = `/?page=${
+        page - 1
+      }${limitPart}${searchPart}${filterPart}`;
       router.prefetch(prevPageUrl);
     }
-  }, [page, count, limit, currentSearch, router]);
+  }, [
+    page,
+    count,
+    limit,
+    currentSearch,
+    filter,
+    router,
+    searchPart,
+    filterPart,
+  ]);
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         my: 4,
         gap: 2,
-        flexWrap: 'wrap'
+        flexWrap: "wrap",
       }}
     >
       <Pagination
         page={page}
         count={count}
         color="primary"
-        size={isMobile ? "medium" : "large"}
-        siblingCount={isMobile ? 0 : 1}
-        boundaryCount={1}
+        size="large"
         renderItem={(item) => (
           <PaginationItem
             component={Link}
-            href={`/?page=${item.page}&limit=${limit}${currentSearch ? `&search=${currentSearch}` : ''}`}
+            href={`/?page=${item.page}&limit=${limit}${searchPart}${filterPart}`}
             {...item}
           />
         )}
       />
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant="body2" color="text.secondary">Na stronie:</Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Typography variant="body2" color="text.secondary">
+          Na stronie:
+        </Typography>
         <FormControl size="small" variant="outlined">
           <Select
             native
             value={String(limit)}
             onChange={handleLimitChange}
-            sx={{ height: 40, borderRadius: 4, minWidth: 70 }}
+            sx={{
+              height: 40,
+              minWidth: 80,
+              borderRadius: 2,
+              bgcolor: "background.paper",
+              "& .MuiNativeSelect-select": {
+                paddingTop: 1,
+                paddingBottom: 1,
+                fontWeight: 500,
+                color: "text.primary",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "primary.main",
+              },
+            }}
             inputProps={{
-              name: 'limit',
-              id: 'limit-select',
+              name: "limit",
+              id: "limit-select",
             }}
           >
             <option value={9}>9</option>

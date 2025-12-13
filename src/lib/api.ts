@@ -13,7 +13,8 @@ export type EventsResponse = {
 export async function getEvents(
   searchQuery: string | null,
   page: number = 1,
-  limit: number = 9
+  limit: number = 9,
+  filter: "upcoming" | "past" = "upcoming"
 ): Promise<EventsResponse> {
   const searchParam = searchQuery ? `&search=${searchQuery}` : "";
 
@@ -24,7 +25,7 @@ export async function getEvents(
     : { next: { revalidate: 60 } };
 
   const res = await fetch(
-    `${baseUrl}/api/events?page=${page}&limit=${limit}${searchParam}`,
+    `${baseUrl}/api/events?page=${page}&limit=${limit}&filter=${filter}${searchParam}`,
     fetchOptions
   );
 
