@@ -1,6 +1,6 @@
 "use client";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Map, { Marker, NavigationControl } from "react-map-gl/mapbox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
@@ -17,34 +17,26 @@ export default function EventMap({ lat, lng, locationName }: Props) {
 
   if (!mapboxToken) {
     return (
-      <Paper
-        elevation={1}
+      <Box
         sx={{
-          mt: 3,
           p: 4,
           textAlign: "center",
-          borderRadius: 2,
           bgcolor: "grey.100",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Typography color="text.secondary" variant="body2">
           Mapa niedostępna (Brak konfiguracji Mapbox).
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
   return (
-    <Paper
-      elevation={1}
-      sx={{
-        mt: 3,
-        borderRadius: 3,
-        overflow: "hidden",
-        height: 350,
-        position: "relative",
-      }}
-    >
+    <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
       <Map
         initialViewState={{
           latitude: lat,
@@ -89,6 +81,6 @@ export default function EventMap({ lat, lng, locationName }: Props) {
           {locationName}
         </Typography>
       </Box>
-    </Paper>
+    </Box>
   );
 }
