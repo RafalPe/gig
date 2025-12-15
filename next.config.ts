@@ -29,7 +29,13 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "s3.eu-central-1.amazonaws.com",
+        hostname: "avatars.githubusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.amazonaws.com",
         port: "",
         pathname: "/**",
       },

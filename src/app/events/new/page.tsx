@@ -17,6 +17,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import DynamicEventMap from "@/components/features/events/DynamicEventMap";
+import ImageUpload from "@/components/ui/ImageUpload";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import toast from "react-hot-toast";
 
@@ -279,15 +280,13 @@ export default function NewEventPage() {
             value={formData.description}
             onChange={handleChange}
           />
-          <TextField
-            margin="normal"
-            fullWidth
-            name="imageUrl"
-            label="Link do zdjęcia (opcjonalnie)"
-            id="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-          />
+          <Box sx={{ mt: 3 }}>
+            <ImageUpload
+              label="Plakat / Zdjęcie Wydarzenia"
+              value={formData.imageUrl}
+              onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+            />
+          </Box>
 
           {error && (
             <Typography color="error" sx={{ mt: 2 }}>

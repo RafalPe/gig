@@ -7,13 +7,12 @@ import {
   Typography,
   Avatar,
   Paper,
-  Alert,
-  AlertTitle,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import InfoIcon from "@mui/icons-material/Info";
+import ImageUpload from "@/components/ui/ImageUpload";
 import toast from "react-hot-toast";
+
 export default function SettingsTab() {
   const { data: session, update } = useSession();
   const [updateUser, { isLoading }] = useUpdateUserMutation();
@@ -67,39 +66,11 @@ export default function SettingsTab() {
           required
         />
 
-        <Box>
-          <TextField
-            label="Link do Avatara (URL)"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            fullWidth
-            placeholder="https://images.unsplash.com/photo-..."
-            helperText={
-              <Box component="span" sx={{ display: "block", mt: 0.5 }}>
-                <strong>Wskazówka:</strong> Aby zdjęcie zadziałało, wejdź na
-                Unsplash, kliknij na zdjęcie
-                <strong> Prawym Przyciskiem Myszki</strong> i wybierz opcję{" "}
-                <em>&quot;Kopiuj adres grafiki&quot;</em> (Copy Image Address).
-                Link powinien kończyć się na .jpg, .png lub zawierać parametry
-                obrazu.
-              </Box>
-            }
-          />
-
-          <Alert
-            severity="info"
-            variant="outlined"
-            icon={<InfoIcon />}
-            sx={{ mt: 2 }}
-          >
-            <AlertTitle>Informacja o przesyłaniu plików</AlertTitle>
-            Obecnie wspieramy tylko linki zewnętrzne (zalecamy{" "}
-            <strong>Unsplash</strong>).
-            <br />
-            Funkcja bezpośredniego przesyłania plików z komputera (Upload) jest
-            w trakcie prac i zostanie dodana wkrótce.
-          </Alert>
-        </Box>
+        <ImageUpload
+          value={image}
+          onChange={setImage}
+          label="Zdjęcie Profilowe"
+        />
 
         <Button
           type="submit"
