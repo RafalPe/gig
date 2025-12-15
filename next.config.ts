@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "s3.eu-central-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
