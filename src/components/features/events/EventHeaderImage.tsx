@@ -13,8 +13,6 @@ export default function EventHeaderImage({
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [coverScale, setCoverScale] = useState(1);
-  const [enableTransformTransition, setEnableTransformTransition] =
-    useState(false);
   const { isMapExpanded } = useEventView();
   const containerRef = useRef<HTMLDivElement>(null);
   const imageDimensionsRef = useRef<{ width: number; height: number } | null>(
@@ -48,15 +46,6 @@ export default function EventHeaderImage({
     return () => observer.disconnect();
   }, [calculateScale]);
 
-  useEffect(() => {
-    if (isLoaded) {
-      const timer = setTimeout(() => {
-        setEnableTransformTransition(true);
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded]);
-
   return (
     <div
       ref={containerRef}
@@ -78,12 +67,11 @@ export default function EventHeaderImage({
           position: "absolute",
           top: 0,
           left: 0,
+          opacity: isLoaded ? 0 : 1,
+          transition: "opacity 0.5s",
+          zIndex: 10,
         }}
       />
-
-      {/* LAYER 1: Background Blur (Always Cover) 
-          - Acts as the backdrop for the gap areas when zoomed out.
-      */}
       <Image
         src={src}
         alt=""
@@ -107,9 +95,7 @@ export default function EventHeaderImage({
           objectFit: "contain",
           opacity: isLoaded ? 1 : 0,
           transform: isMapExpanded ? "scale(1)" : `scale(${coverScale})`,
-          transition: `opacity 0.5s${
-            enableTransformTransition ? ", transform 0.8s ease-in-out" : ""
-          }`,
+          transition: "transform 0.8s ease-in-out, opacity 0.5s",
           zIndex: 2,
         }}
         priority
